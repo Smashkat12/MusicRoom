@@ -1,0 +1,50 @@
+{
+  "name": "musicroom",
+  "version": "1.0.0",
+  "description": "a music streaming webapp",
+  "main": "server.js",
+  "scripts": {
+    "server": "nodemon -r esm server/server.js",
+    "client": "cd ./client && npm run serve",
+    "dev": "concurrently --kill-others \"npm run client\" \"npm run server\""
+  },
+  "homepage": "",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "bcrypt": "^5.0.0",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "bootstrap": "^4.5.2",
+    "chalk": "^4.1.0",
+    "concurrently": "^5.3.0",
+    "connect-timeout": "^1.9.0",
+    "cookie-session": "^1.4.0",
+    "cors": "^2.8.5",
+    "esm": "^3.2.25",
+    "express": "^4.17.1",
+    "express-fileupload": "^1.2.0",
+    "express-session": "^1.17.1",
+    "fluent-ffmpeg": "^2.1.2",
+    "mongoose": "^5.10.9",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.2",
+    "mysql": "^2.18.1",
+    "njwt": "^1.0.0",
+    "node-torrent": "^0.2.2",
+    "nodemailer": "^6.4.14",
+    "nyaapi": "^2.3.3",
+    "passport": "^0.4.1",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-local": "^1.0.0",
+    "passport-oauth2": "^1.5.0",
+    "path": "^0.12.7",
+    "sass-loader": "^10.0.2",
+    "swagger-jsdoc": "^4.3.0",
+    "swagger-ui-express": "^4.1.4",
+    "util": "^0.12.3",
+    "uuid": "^8.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}
