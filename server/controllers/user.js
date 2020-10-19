@@ -16,7 +16,7 @@ module.exports = {
   //registers a user & sends email confirmation
   postUser: (req, res) => {
     const confirmKey = uuidv4();
-    const confirmationLink = `${req.body.origin}/confirm/${confirmKey}`;
+    const confirmationLink = `http://localhost:8080/confirm/${confirmKey}`;
 
     const newUser = User({
       firstname: req.body.first_name,
@@ -70,14 +70,14 @@ module.exports = {
           html: message,
         };
 
-        /* transporter.sendMail(mailOptions, function (error, info) {
+        transporter.sendMail(mailOptions, function (error, info) {
           if (error) {
             console.log(chalk.bold.redBright("Email error: "), error);
           } else {
             console.log(chalk.bold.greenBright("Email sent: "), info.response);
             res.json({ success: true, user: newUser });
           }
-		}); */
+		});
 		console.log(chalk.bold.greenBright("Email sent: "), req.body.email);
     	res.json({ success: true, user: newUser });
       }
