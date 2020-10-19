@@ -7,10 +7,11 @@ const passport = require("passport");
 const app = express();
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
-/* const cookieParser = require("cookie-parser"); */
+
 const cors = require("cors");
-const swaggerJsDoc = require("swagger-jsdoc");
+
 const swaggerUi = require("swagger-ui-express");
+const swaggerDocs = require("./docs/swagger.json");
 
 const contimeout = require("connect-timeout");
 const { v4: uuidv4 } = require("uuid");
@@ -21,7 +22,7 @@ const userRouter = require("./routes/userRouter");
 
 global.__basedir = __dirname;
 
-/* console.log(__dirname); */
+
 
 /* ***************************************************END OF IMPORTS ********************************************************** */
 
@@ -83,25 +84,6 @@ app.use("/public", express.static(__dirname + "/public"));
 
 /* Start Services */
 
-//swagger api doc gen
-
-const swaggerOptions = {
-  swaggerDefinition: {
-    info: {
-      title: "Music Room API",
-      description: "Music Room API Information",
-      contact: {
-        name: "kmorulan & the rest of the gang usernames",
-      },
-      servers: ["http://localhost:5000"],
-    },
-  },
-  apis: ["./routes/**.js"],
-};
-
-const swaggerDocs = swaggerJsDoc(swaggerOptions);
-cl(chalk.bold.yellowBright(JSON.stringify(swaggerDocs)));
-
 //passport
 require("./services/passport-service")(passport); //pass same instance of passport to be used in config.
 app.use(passport.initialize()); //
@@ -111,7 +93,7 @@ app.use(contimeout("6000s"));
 /* ****************************************************END OF SERVICES **************************************************** */
 
 //Routes
-app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs)); //create middleware to serve the api info and the UI for display at /api/docs
 app.use("/api/auth", authRouter.router);
 app.use("/api/users", userRouter.router);
 
