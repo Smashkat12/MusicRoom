@@ -5,8 +5,14 @@
     <section class="layout">
       <h1 class="center">Registration</h1>
       <div class="form-field">
+        <br />
+        <div id="err" v-for="error in errors" v-bind:key="error">
+          <p>{{ error }}</p>
+        </div>
+        <div id="succ" v-for="succ in success" v-bind:key="succ">
+          <p>{{ succ }}</p>
+        </div>
         <form>
-          <br />
           <input
             type="text"
             placeholder="Enter username"
@@ -61,13 +67,7 @@
           <br /><br />
         </form>
         <button class="buttons" v-on:click="validate">Submit</button
-        ><br /><br />
-        <div id="err" v-for="error in errors" v-bind:key="error">
-          <p>{{ error }}</p>
-        </div>
-        <div id="succ" v-for="succ in success" v-bind:key="succ">
-          <p>{{ succ }}</p>
-        </div>
+        >
         <hr />
         <small
           >Register using
@@ -92,7 +92,7 @@ import {
   secure_password,
   axios_post,
   validUsername,
-  validName,
+  validName,validEmail,
 } from "../functions/functions";
 import sweet from "sweetalert";
 
@@ -120,6 +120,7 @@ export default {
       var checkUsername = validUsername(this.user_name);
       var checkFirst = validName("First name", this.first_name);
       var checkLast = validName("Last name", this.last_name);
+      var checkEmail = validEmail(this.email);
       if (checkUsername !== "good") {
         this.errors.push(checkUsername);
         return;
@@ -130,7 +131,10 @@ export default {
         this.errors.push(checkUsername);
         return;
       }
-
+      else if(checkEmail !== true){
+        this.errors.push(checkEmail);
+        return;
+      }
       let check = secure_password(this.password);
       if (check !== "good") {
         this.errors.push(check);
@@ -158,15 +162,15 @@ export default {
       if (results !== "Oops!") {
         if (results.data.error) {
           this.errors = results.data.error;
+          console.log(this.errors);
         } else if (results.data.success) {
           this.success.push("Registration successful! You can now log in");
           this.clean_input();
-          sweet("", "Registration Successful", "Success");
+          sweet("", "Registration Successful", "success");
           this.$router.push("/login");
         }
       } else {
-        sweet("","An unexpected error happened" )
-        //this.errors.push("An unexpected error happened");
+        this.errors.push("An unexpected error happened");
       }
     },
     clean_input() {

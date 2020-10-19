@@ -56,6 +56,14 @@ export function validName(field, str) {
     else return 'good' 
 }
 
+export function validEmail(email) 
+{
+ if (/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(email.value))
+    return (true)
+    else
+    return ("You have entered an invalid email address!")
+}
+
 export function validComment(comment) {
     var format = /[`^+\-={}*[\];%:"\\|<>/~]/
     if (comment.length < 1 ) {
