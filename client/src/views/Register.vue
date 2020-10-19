@@ -5,14 +5,20 @@
     <section class="layout">
       <h1 class="center">Registration</h1>
       <div class="form-field">
+        <br />
+        <div id="err" v-for="error in errors" v-bind:key="error">
+          <p>{{ error }}</p>
+        </div>
+        <div id="succ" v-for="succ in success" v-bind:key="succ">
+          <p>{{ succ }}</p>
+        </div>
         <form>
-          <br />
           <input
             type="text"
             placeholder="Enter username"
             class="form-control"
-            name="username"
-            v-model="username"
+            name="user_name"
+            v-model="user_name"
           />
           <br />
           <br />
@@ -61,13 +67,7 @@
           <br /><br />
         </form>
         <button class="buttons" v-on:click="validate">Submit</button
-        ><br /><br />
-        <div id="err" v-for="error in errors" v-bind:key="error">
-          <p>{{ error }}</p>
-        </div>
-        <div id="succ" v-for="succ in success" v-bind:key="succ">
-          <p>{{ succ }}</p>
-        </div>
+        >
         <hr />
         <small
           >Register using
@@ -92,7 +92,7 @@ import {
   secure_password,
   axios_post,
   validUsername,
-  validName,
+  validName,validEmail,
 } from "../functions/functions";
 import sweet from "sweetalert";
 
@@ -105,7 +105,7 @@ export default {
     return {
       first_name: "",
       last_name: "",
-      username: "",
+      user_name: "",
       email: "",
       password: "",
       confirm_password: "",
@@ -117,9 +117,10 @@ export default {
   methods: {
     validate: function () {
       this.errors = [];
-      var checkUsername = validUsername(this.username);
+      var checkUsername = validUsername(this.user_name);
       var checkFirst = validName("First name", this.first_name);
       var checkLast = validName("Last name", this.last_name);
+      var checkEmail = validEmail(this.email);
       if (checkUsername !== "good") {
         this.errors.push(checkUsername);
         return;
@@ -130,7 +131,10 @@ export default {
         this.errors.push(checkUsername);
         return;
       }
-
+      else if(!checkEmail){
+        this.errors.push("Invalid email");
+        return;
+      }
       let check = secure_password(this.password);
       if (check !== "good") {
         this.errors.push(check);
@@ -149,19 +153,20 @@ export default {
       const data = {
         first_name: escape(this.first_name),
         last_name: escape(this.last_name),
-        username: escape(this.username),
+        user_name: escape(this.user_name),
         email: escape(this.email),
         password: this.password,
         password_repeat: this.password_repeat,
       };
-      var results = await axios_post("/api/users/signup", data);
+      var results = await axios_post("/api/users/user", data);
       if (results !== "Oops!") {
         if (results.data.error) {
           this.errors = results.data.error;
+          console.log(this.errors);
         } else if (results.data.success) {
           this.success.push("Registration successful! You can now log in");
           this.clean_input();
-          sweet("", "registration successful", "success");
+          sweet("", "Registration Successful", "success");
           this.$router.push("/login");
         }
       } else {
@@ -171,7 +176,7 @@ export default {
     clean_input() {
       this.first_name = "";
       this.last_name = "";
-      this.username = "";
+      this.user_name = "";
       this.email = "";
       this.password = "";
       this.confirm_password = "";

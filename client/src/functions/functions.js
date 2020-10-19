@@ -56,6 +56,11 @@ export function validName(field, str) {
     else return 'good' 
 }
 
+export function validEmail(email) {
+    const regex = /^[a-zA-Z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}$/;
+    return regex.test(email);
+}
+
 export function validComment(comment) {
     var format = /[`^+\-={}*[\];%:"\\|<>/~]/
     if (comment.length < 1 ) {
