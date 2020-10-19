@@ -21,7 +21,7 @@ const userRouter = require("./routes/userRouter");
 
 global.__basedir = __dirname;
 
-console.log(__dirname);
+/* console.log(__dirname); */
 
 /* ***************************************************END OF IMPORTS ********************************************************** */
 
