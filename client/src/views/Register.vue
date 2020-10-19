@@ -131,8 +131,8 @@ export default {
         this.errors.push(checkUsername);
         return;
       }
-      else if(checkEmail !== true){
-        this.errors.push(checkEmail);
+      else if(!checkEmail){
+        this.errors.push("Invalid email");
         return;
       }
       let check = secure_password(this.password);
