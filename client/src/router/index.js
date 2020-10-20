@@ -20,7 +20,7 @@ export default [
         component: Register
     },
     {
-        path: '/forgot/:id',
+        path: '/forgot/:key',
         name: 'ResetPassword',
         component: ResetPassword
     },
