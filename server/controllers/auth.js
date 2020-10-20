@@ -57,7 +57,7 @@ module.exports = {
 
   forgotInitiate: (req, res) => {
     const forgotKey = uuidv4();
-    const forgotLink = `${req.body.origin}/forgot/${forgotKey}`;
+    const forgotLink = `http://localhost:8080/forgot/${forgotKey}`;
 
     User.findOneAndUpdate(
       { email: req.body.email },

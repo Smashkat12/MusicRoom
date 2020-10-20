@@ -1,13 +1,19 @@
 const express = require("express");
 const userHandler = require("../controllers/user");
 
-
 exports.router = (() => {
   const userRouter = express.Router();
-
-  //GET
-  //gets all user documents
-  //http://localhost:5000/api/users
+  /**
+   * @api {GET} /api/users Gets all users
+   * @apiName getUser
+   * @apiGroup UserController
+   *
+   * @apiDescription Gets list of users
+   *
+   * @apiSuccess (200) {Boolean} success status of request
+   * @apiSuccess (200) {Object[]} users List of user profiles.
+   * 
+   */
   userRouter.get("/", userHandler.getUsers);
 
   //GET
