@@ -14,12 +14,12 @@
         </div>
         <input
           type="text"
-          placeholder="Enter your username"
+          placeholder="Enter your email"
           class="form-control"
-          v-model="username"
+          v-model="email"
         />
       </form>
-      <button class="buttons" @click="validate">Submit Username</button>
+      <button class="buttons" @click="validate">Submit Email</button>
       <br />
       <router-link to="/login">Back to login</router-link>
     </section>
@@ -31,7 +31,8 @@
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
-import { axios_post, validUsername } from "../functions/functions";
+import { axios_post, validEmail } from "../functions/functions";
+import sweet from "sweetalert";
 
 export default {
   components: {
@@ -42,8 +43,8 @@ export default {
     return {
       title: "Forgot Password",
       text:
-        "Enter your username and you will recieve an email with instructions to reset your password",
-      username: "",
+        "Enter your email and you will recieve an email with instructions to reset your password",
+      email: "",
       errors: [],
       succ: null,
     };
@@ -52,26 +53,29 @@ export default {
     validate() {
       this.err = [];
       this.succ = null;
-      var checkUsername = validUsername(this.username);
-      if (checkUsername !== "good") {
-        this.errors.push(checkUsername);
+      var checkEmail = validEmail(this.email);
+      if (!checkEmail) {
+        sweet("", "Invalid email address", "error");
         return;
       } else {
         this.forgot_pass();
       }
     },
     async forgot_pass() {
-      const data = { username: escape(this.username) };
-      var results = await axios_post("/api/forgotpassword/", data);
+      const data = { email: escape(this.email) };
+      var results = await axios_post("/api/auth/forgot", data);
       if (results !== "Oops!") {
-        if (results.data.error) {
+        if (results.data.success == false) {
+           sweet("", results.data.status, "error");
+           this.email = "";
           this.errors.push(results.data.error);
-        } else if (results.data.accepted) {
-          this.succ = "An email was sent to you!";
-          this.username = "";
+        } else if (results.data.success == true) {
+          sweet("", "An email was sent to you!", "success");
+          this.email = "";
         }
       } else {
-        this.errors.push("An unexpected error happened");
+          sweet("", "Server error: Could not process your information", "error");
+          this.email = "";
       }
     },
   },
