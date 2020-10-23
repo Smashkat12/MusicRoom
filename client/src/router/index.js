@@ -8,6 +8,7 @@ import ForgotPassword from '../views/ForgotPassword.vue'
 import ResetPassword from '../views/ResetPassword.vue'
 import SearchMusic from '../views/SearchMusic.vue'
 import Landing from '../views/Landing.vue'
+import ConfirmEmail from '../views/ConfirmEmail.vue'
 
 export default [
     {   
@@ -19,7 +20,7 @@ export default [
         component: Register
     },
     {
-        path: '/reset/:id',
+        path: '/forgot/:key',
         name: 'ResetPassword',
         component: ResetPassword
     },
@@ -56,5 +57,10 @@ export default [
         component: SearchMusic,
         meta: {requiresAuth: true}
     },
+    { 
+        path: '/confirm/:key', 
+        name: 'ConfirmEmail',
+        component: ConfirmEmail
+    }
 ]
 

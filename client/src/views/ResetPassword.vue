@@ -1,6 +1,7 @@
 <template>
   <div>
     <app-header></app-header>
+    <br/>
     <h1>{{ title }}</h1>
     <section>
       <div class="form-field">
@@ -21,11 +22,12 @@
           <input
             type="password"
             v-model="confirm_pass"
+            class="form-control"
             placeholder="Confirm new password"
           />
           <br />
         </form>
-        <button @click="validate">Update Password</button>
+        <button class="buttons" @click="validate">Update Password</button>
       </div>
       <br />
     </section>
@@ -38,6 +40,7 @@ import axios from "axios";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { secure_password } from "../functions/functions";
+import sweet from "sweetalert";
 
 export default {
   components: {
@@ -51,7 +54,7 @@ export default {
       confirm_pass: "",
       errors: [],
       succ: [],
-      token: this.$route.params.id,
+      key: this.$route.params.key,
     };
   },
   methods: {
@@ -60,10 +63,10 @@ export default {
       this.success = [];
       let check = secure_password(this.new_pass);
       if (check !== "good") {
-        this.errors.push(check);
+        sweet("", check, "error");
         return;
       } else if (this.new_pass != this.confirm_pass) {
-        this.errors.push("Passwords do not match");
+        sweet("", "Passwords do not match", "error");
         return;
       }
       if (this.errors.length == 0) {
@@ -71,22 +74,22 @@ export default {
       }
     },
     reset() {
-      const path = "http://localhost:5000/api/forgotpassword/" + this.token;
+      const path = "http://localhost:5000/api/auth/forgot/" + this.key;
       axios
         .post(path, {
           password: this.new_pass,
         })
         .then((result) => {
-          // console.log(result)
-          if (result.data.error) {
-            this.errors.push("Invalid token");
-          } else if (result.data.success) {
-            this.succ.push(
-              "Password changed successfully! You will be redirected to login"
-            );
+          if (result.data.success == false) {
+            sweet("", result.data.error, "error");
+          } else if (result.data.success == true) {
+              sweet("", "Password changed successfully!", "success");
             setTimeout(() => {
               this.$router.push("/login");
-            }, 2000);
+            }, 3000);
+          }
+          else {
+             sweet("", "Server error", "error");
           }
         })
         .catch((error) => {
