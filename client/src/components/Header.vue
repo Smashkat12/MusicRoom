@@ -45,7 +45,7 @@ export default {
   data() {
     return {
       title: "This is the header",
-      uid: null,
+      token: null,
       is_logged_in: false,
     };
   },
@@ -59,14 +59,15 @@ export default {
   },
 
   created() {
-    this.uid = localStorage.getItem("jwt");
-    if (this.uid) {
+    this.token = localStorage.getItem("jwt");
+    if (this.token) {
       this.is_logged_in = true;
     }
+    
   },
 };
 </script>
-<style  scoped>
+<style scoped>
 header {
   background-color: #5e8465 !important;
   width: 100%;

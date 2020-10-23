@@ -2,8 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import VueRouter from 'vue-router'
 import routes from './router/index'
-import jwt from 'njwt'
-/* import axios from 'axios' */
+import axios from 'axios'
 
 Vue.use(VueRouter)
 
@@ -13,24 +12,26 @@ const router = new VueRouter({
 })
 
 //set axios as default http client for Vue 
-/* Vue.prototype.$http = axios; */
+Vue.prototype.$http = axios;
 
 router.beforeEach(async (to, from, next) => {
-    let token = localStorage.getItem("jwt")
+	let token = null
+    token = localStorage.getItem("jwt")
     if (to.matched.some(record => record.meta.requiresAuth)) {
         if (!token) {
             next({ path: '/' })
         } else {
 			//if there is a token, append default axios authorization header
-			/* Vue.prototype.$http.defaults.headers.common['Authorization'] = token; */
-            jwt.verify(token, 'secret', (err) => {
-                if (err) {
-                    next({ path: '/' })
-                    localStorage.removeItem('jwt')
-                    localStorage.removeItem('user')
-                }
-                next()
-            })
+			Vue.prototype.$http.defaults.headers.common['Authorization'] = token;
+
+			//we need to call isAuthenticated route in server
+			axios.get("http://localhost:5000/api/auth").then((res) => {
+				if (res.data.auth) {
+					next();
+				} else {
+					next({ path: "/" });
+				}
+			})		
         }
     } else {
         next()

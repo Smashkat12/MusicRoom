@@ -30,20 +30,22 @@ export const generateServerError = (
 //validation
 
 export const registerValidation = [
-  check("firstname").exists().withMessage("Firstname cannot be empty"),
+  check("firstname").exists().withMessage("Firstname cannot be empty"), //min len 2
   check("lastname").exists().withMessage("Lastname cannot be empty"),
-  check("username").exists().withMessage("Username cannot be empty"),
+  check("username").exists().withMessage("Username cannot be empty"), //min len 2
   check("email")
     .exists()
     .withMessage("Email cannot be empty")
     .isEmail()
     .withMessage("recheck provided email, there is something not ok with it"),
-  check("password")
+  check("password") //uppercase, special char,
     .exists()
     .withMessage("password cannot be empty")
-    .isLength({ min: 4 })
+    .isLength({ min: 8 })
     .withMessage("password cannot be less than 4 characters"),
 ];
+
+
 export const loginValidation = [
   check("username")
     .exists()

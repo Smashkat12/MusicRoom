@@ -6,14 +6,17 @@
   </div>
 </template>
 <script>
-import Header from "../components/Header";
+
 import Footer from "../components/Footer";
+import Header from "../components/Header";
+
 
 export default {
-  name: "landing",
+  name: "Landing",
   components: {
-    "app-footer": Footer,
     "app-header": Header,
+    "app-footer": Footer,
+   
   },
 };
 </script>

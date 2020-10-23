@@ -17,8 +17,8 @@
             type="text"
             placeholder="Enter username"
             class="form-control"
-            name="user_name"
-            v-model="user_name"
+            name="username"
+            v-model="username"
           />
           <br />
           <br />
@@ -26,8 +26,8 @@
             type="text"
             placeholder="Enter First Name"
             class="form-control"
-            name="first_name"
-            v-model="first_name"
+            name="firstname"
+            v-model="firstname"
           />
           <br />
           <br />
@@ -35,8 +35,8 @@
             type="text"
             placeholder="Enter Last Name"
             class="form-control"
-            name="last_name"
-            v-model="last_name"
+            name="lastname"
+            v-model="lastname"
           />
           <br />
           <br />
@@ -62,7 +62,7 @@
             name="confirm_password"
             placeholder="Confirm Password"
             class="form-control"
-            v-model="confirm_password"
+            v-model="confirmPassword"
           />
           <br /><br />
         </form>
@@ -103,12 +103,12 @@ export default {
   },
   data() {
     return {
-      first_name: "",
-      last_name: "",
-      user_name: "",
+      firstname: "",
+      lastname: "",
+      username: "",
       email: "",
       password: "",
-      confirm_password: "",
+      confirmPassword: "",
       submit: true,
       errors: [],
       success: [],
@@ -117,9 +117,9 @@ export default {
   methods: {
     validate: function () {
       this.errors = [];
-      var checkUsername = validUsername(this.user_name);
-      var checkFirst = validName("First name", this.first_name);
-      var checkLast = validName("Last name", this.last_name);
+      var checkUsername = validUsername(this.username);
+      var checkFirst = validName("First name", this.firstname);
+      var checkLast = validName("Last name", this.lastname);
       var checkEmail = validEmail(this.email);
       if (checkUsername !== "good") {
         this.errors.push(checkUsername);
@@ -140,7 +140,7 @@ export default {
         this.errors.push(check);
         return;
       }
-      if (this.password != this.confirm_password) {
+      if (this.password != this.confirmPassword) {
         this.errors.push("Passwords do not match");
         return;
       }
@@ -151,17 +151,17 @@ export default {
     register: async function () {
       this.errors = [];
       const data = {
-        first_name: escape(this.first_name),
-        last_name: escape(this.last_name),
-        user_name: escape(this.user_name),
+        firstname: escape(this.firstname),
+        lastname: escape(this.lastname),
+        username: escape(this.username),
         email: escape(this.email),
         password: this.password,
-        password_repeat: this.password_repeat,
+        confirmPassword: this.confirmPassword,
       };
       var results = await axios_post("/api/users/user", data);
       if (results !== "Oops!") {
-        if (results.data.error) {
-          this.errors = results.data.error;
+        if (results.data.success === false) {
+          this.errors = results.data.message;
           console.log(this.errors);
         } else if (results.data.success) {
           this.success.push("Registration successful! You can now log in");
@@ -174,12 +174,12 @@ export default {
       }
     },
     clean_input() {
-      this.first_name = "";
-      this.last_name = "";
-      this.user_name = "";
+      this.firstname = "";
+      this.lastname = "";
+      this.username = "";
       this.email = "";
       this.password = "";
-      this.confirm_password = "";
+      this.confirmPassword = "";
       this.errors = [];
     },
   },

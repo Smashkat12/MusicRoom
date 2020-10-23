@@ -1,5 +1,5 @@
 // import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Home.vue'
+//import Home from '../views/Home.vue'
 import Register from '../views/Register.vue'
 import Login from '../views/Login.vue'
 import Profile from '../views/Profile.vue'
@@ -13,7 +13,8 @@ import ConfirmEmail from '../views/ConfirmEmail.vue'
 export default [
     {   
         path: '/', 
-        component: Home 
+        name: 'Login',
+        component: Login
     },
     { 
         path: '/register', 

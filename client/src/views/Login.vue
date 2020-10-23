@@ -25,11 +25,12 @@
 </template>
 
 <script>
-import { secure_password, validUsername } from "../functions/functions";
-import axios from 'axios'
+import { secure_password, validUsername, axios_post} from "../functions/functions";
+/* import axios from 'axios' */
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import swal from 'sweetalert'
+/* import swal from 'sweetalert'; */
+/* import jwt_decode from "jwt-decode"; */
 
 export default {
     components: {
@@ -61,23 +62,32 @@ export default {
             }
         },
         async login() {
-            let path = 'http://localhost:5000/api/users/signin/'
-            let res = await axios.post(path, {
-                'username': escape(this.username),
-                'password': this.password
-            }).catch(e => {e})
-            if (res.data.error) {
-                this.err.push(res.data.error)
-            } else if (res.data.success) {
-                localStorage.setItem("jwt", res.data.success.token)
-                localStorage.setItem('user', this.username)
-                swal("", "Welcome to Music Room "+this.username, "success")
-                this.$router.push(`/landing`)
+            const data = {
+                username: escape(this.username),
+                password: this.password
+            }
+            let res = await axios_post("/api/auth/login", data);
+			console.log(res.data);
+            if (res.data.success === false) {
+				console.log("we got an error bafana")
+                this.err.push(res.data)
+            } else if (res.data.success && res.data.token) {
+				console.log("We have a tokken, just about to save it")
+				localStorage.setItem("jwt", res.data.token)
+
+
+
+				//decode jwt to get username
+
+				/* let token = res.data.token;
+				let jwt = token.split(" ")[1];
+				let decoded = jwt_decode(jwt); */
+
+                /* swal("", "Welcome to Music Room "+ decoded.username, "success") */
+                this.$router.push({name: 'Landing'})
             } else {
                 this.err.push('an unexpected error occured')
             }
-        },
-        auth() {
         }
     }
     

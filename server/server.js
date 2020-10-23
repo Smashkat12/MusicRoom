@@ -56,7 +56,7 @@ mongoose.connection.on("disconnected", () => {
 
 app.use(
   cors({
-    origin: [`*`],
+    origin: [`http://localhost:8080`],
     exposedHeaders: ["Authorization"],
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true,
