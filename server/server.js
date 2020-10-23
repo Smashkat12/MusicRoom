@@ -1,5 +1,4 @@
 const express = require("express");
-const session = require("express-session");
 const morgan = require("morgan");
 const chalk = require("chalk");
 const fileUpload = require("express-fileupload");
@@ -53,24 +52,13 @@ mongoose.connection.on("disconnected", () => {
 /* ****************************************************END OF DB CONNECTION **************************************************** */
 /* Middleware */
 
-app.use(
-  session({
-    genid: () => {
-      return uuidv4();
-    },
-    secret: "SecretSource",
-    cookie: {
-      secure: "auto",
-      maxAge: 1000 * 60 * 60 * 24 * 7, // expires in a week
-    },
-    resave: false,
-    saveUninitialized: false,
-  })
-); //
+
 
 app.use(
   cors({
-    origin: [`http://localhost:8080`],
+    origin: [`*`],
+    exposedHeaders: ["Authorization"],
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true,
   })
 ); //
@@ -87,15 +75,16 @@ app.use("/public", express.static(__dirname + "/public"));
 //passport
 require("./services/passport-service")(passport); //pass same instance of passport to be used in config.
 app.use(passport.initialize()); //
-app.use(passport.session()); //
 app.use(contimeout("6000s"));
 
 /* ****************************************************END OF SERVICES **************************************************** */
 
 //Routes
+
+
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs)); //create middleware to serve the api info and the UI for display at /api/docs
 app.use("/api/auth", authRouter.router);
-app.use("/api/users", userRouter.router);
+app.use("/api/user", userRouter.router);
 
 /* ****************************************************END OF ROUTES **************************************************** */
 

@@ -1,5 +1,7 @@
 const express = require("express");
 const authHandler = require("../controllers/auth");
+const passport = require("passport")
+const {loginValidation} = require("../utils/utils")
 
 
 //authRouter
@@ -15,7 +17,7 @@ exports.router = (() => {
    * @apiSuccess {Boolean} auth authenticated status.
    * @apiSuccess {Object} user user object from bd.
    */
-  authRouter.get("/", authHandler.isAuthenticated);
+  authRouter.get("/", passport.authenticate("jwt", {session: false}),authHandler.isAuthenticated);
 
   /**
    * @api {GET} /api/auth/logout Ends user session
@@ -43,7 +45,7 @@ exports.router = (() => {
    * @apiSuccess {Object} user user data from DB.
    */
 
-  authRouter.post("/login/:strategy", authHandler.strategy);
+  authRouter.post("/login", loginValidation, authHandler.strategy);
 
   authRouter.post("/confirm", authHandler.confirm);
 

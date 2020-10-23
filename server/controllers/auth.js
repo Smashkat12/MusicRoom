@@ -2,8 +2,12 @@ const nodemailer = require("nodemailer");
 const passport = require("passport");
 const chalk = require("chalk");
 const { v4: uuidv4 } = require("uuid");
+const JWT = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const User = require("../models/user");
+const keys = require("../config/keys");
+const { validationResult } = require("express-validator");
+const { generateServerError } = require("../utils/utils");
 
 module.exports = {
   isAuthenticated: (req, res) => {
@@ -17,29 +21,48 @@ module.exports = {
   },
 
   strategy: (req, res, next) => {
-    const strategy = req.params.strategy;
-    if (strategy === "local") {
-      passport.authenticate("local", (err, user, info) => {
-        req.login(user, (err) => {
-          if (err) {
-            res.json({ success: false, status: info.message });
-          } else if (user) {
-            res.json({
-              success: true,
-              status: "Authentication success",
-              user: req.user,
-            });
-          } else {
-            res.json({ success: false, status: info.message });
-          }
-        });
-      })(req, res, next);
-    } else {
-      res.json({
-        success: false,
-        status: "Authentication failed, strategy error",
-      });
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      const resStatusCode = 400;
+      const fullError = { success: false, errors: errors.array() };
+      const message = "Input validation error";
+      return generateServerError(res, resStatusCode, fullError, message);
     }
+
+    passport.authenticate("local", (err, user, info) => {
+      if (err) {
+        const resStatusCode = 500;
+        const fullError = { success: false, errors: err.array() };
+        const message = "Something went wrong in server";
+        return generateServerError(res, resStatusCode, fullError, message);
+      }
+
+      if (!user) {
+        return res
+          .status(404)
+          .json({ code: 404, success: false, message: info.message });
+      } else {
+        const payload = {
+          _id: user._id,
+          username: user.username,
+        };
+
+        JWT.sign(
+          payload,
+          keys.JWT.secret,
+          { expiresIn: "1d" },
+          (err, token) => {
+            res.status(200).send({
+              code: 200,
+              success: true,
+              token: `Bearer ${token}`,
+              message: "Login sucessful",
+            });
+          }
+        );
+      }
+    })(req, res, next);
   },
 
   confirm: (req, res) => {
