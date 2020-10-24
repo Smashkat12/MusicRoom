@@ -33,9 +33,9 @@ exports.router = (() => {
   );
 
 
-  userRouter.get("/user/:username", userHandler.getUserByUsername);
+  userRouter.get("/:username", userHandler.getUserByUsername);
   
-  userRouter.post("/user/avatar", userHandler.postAvatar);
+  userRouter.post("/avatar", userHandler.postAvatar);
 
   return userRouter;
 })();

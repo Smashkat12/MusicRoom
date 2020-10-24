@@ -84,7 +84,7 @@
 <script>
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { axios_post,
+import { axios_put,
          validUsername,
          validName,
          validEmail } from "../functions/functions";
@@ -140,9 +140,9 @@ export default {
         username: escape(this.username),
         email: escape(this.email),
       };
-      var results = await axios_post("/api/user", data);
+      var results = await axios_put(`/api/user/${this._id}`, data);
       if (results !== "Oops!") {
-        if (results.data.success === false) {
+        if (results.data.success == false) {
           this.errors = results.data.message;
           console.log(this.errors);
         } else if (results.data.success) {
