@@ -3,6 +3,7 @@ const keys = require("../config/keys");
 const bcrypt = require("bcryptjs");
 const LocalStrategy = require("passport-local").Strategy;
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const FacebookStrategy = require("passport-facebook").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 const JwtStrategy = require("passport-jwt").Strategy;
 const { validationResult } = require("express-validator");
@@ -66,7 +67,6 @@ module.exports = function (passport) {
               }
 
               //create user
-
               const {
                 firstname,
                 lastname,
@@ -81,7 +81,7 @@ module.exports = function (passport) {
                 return done(null, false, { message: "Passwords dont match" });
               }
 
-			  const confirmKey = uuidv4();
+              const confirmKey = uuidv4();
               const newUser = User({
                 firstname: firstname,
                 lastname: lastname,
@@ -138,6 +138,61 @@ module.exports = function (passport) {
     })
   );
 
+  /* Facebook Strategy */
+
+  passport.use(
+    new FacebookStrategy(
+      {
+        clientID: keys.FACEBOOK.clientID,
+        clientSecret: keys.FACEBOOK.secret,
+        callbackURL: "http://localhost:5000/api/auth/login/facebook/callback",
+        passReqToCallback: true,
+        profileFields: ["id", "emails", "name"],
+      },
+      function (req, accessToken, refreshToken, profile, done) {
+        process.nextTick(function () {
+          //user is not logged in yet
+          if (!req.user) {
+            User.findOne({ _facebookId: profile.id }, function (err, user) {
+              if (err) return done(err);
+              if (user) {
+                if (!user.facebookToken) {
+                  user.facebookToken = accessToken;
+                  user.save(function (err) {
+                    if (err) return done(err);
+                  });
+                }
+                return done(null, user);
+              } else {
+                var newUser = new User();
+                newUser._facebookId = profile.id;
+                newUser.facebookToken = accessToken;
+                newUser.firstname = profile.name.givenName;
+                newUser.lastname = profile.name.familyName;
+                newUser.username = `${profile.name.givenName}${profile.name.familyName}`;
+                newUser.email = profile.emails[0].value;
+                newUser.confirmKey = "confirmed";
+                newUser.save(function (err) {
+                  if (err) throw err;
+                  return done(null, newUser);
+                });
+              }
+            });
+          } else {
+            var user = req.user;
+            user.facebook.id = profile.id;
+            user.facebook.token = accessToken;
+
+            user.save(function (err) {
+              if (err) throw err;
+              return done(null, user);
+            });
+          }
+        });
+      }
+    )
+  );
+
   /* Google Strategy */
 
   passport.use(
@@ -145,30 +200,35 @@ module.exports = function (passport) {
       {
         clientID: keys.GOOGLE.clientID,
         clientSecret: keys.GOOGLE.secret,
-        callbackURL: "http://localhost:5000/oauth/google/redirect",
+        callbackURL: "http://localhost:5000/api/auth/login/google/callback",
         passReqToCallback: true,
       },
       function (req, accessToken, refreshToken, profile, done) {
         process.nextTick(function () {
           if (!req.user) {
-            User.findOne({ "google.id": profile.id }, function (err, user) {
+            User.findOne({ _googleId: profile.id }, function (err, user) {
               if (err) return done(err);
               if (user) {
-                if (!user.google.token) {
-                  user.google.token = accessToken;
-                  user.google.name = profile.displayName;
-                  user.google.email = profile.emails[0].value;
+                if (!user.googleToken) {
+                  user.googleToken = accessToken;
                   user.save(function (err) {
-                    if (err) throw err;
+                    if (err) return done(err);
                   });
                 }
                 return done(null, user);
               } else {
+
+				//include check for email in db
                 var newUser = new User();
-                newUser.google.id = profile.id;
-                newUser.google.token = accessToken;
-                newUser.google.name = profile.displayName;
-                newUser.google.email = profile.emails[0].value;
+                newUser._googleId = profile.id;
+                newUser.googleToken = accessToken;
+                newUser.firstname = profile.name.givenName;
+                newUser.lastname = profile.name.familyName;
+                newUser.username = !profile.username
+                  ? profile.displayName
+                  : profile.username;
+                newUser.email = profile.emails[0].value;
+                newUser.confirmKey = "confirmed";
 
                 newUser.save(function (err) {
                   if (err) throw err;
@@ -178,10 +238,8 @@ module.exports = function (passport) {
             });
           } else {
             var user = req.user;
-            user.google.id = profile.id;
-            user.google.token = accessToken;
-            user.google.name = profile.displayName;
-            user.google.email = profile.emails[0].value;
+            user._googleId = profile.id;
+            user.googleToken = accessToken;
 
             user.save(function (err) {
               if (err) throw err;

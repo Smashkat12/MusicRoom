@@ -1,8 +1,7 @@
 const express = require("express");
 const authHandler = require("../controllers/auth");
-const passport = require("passport")
-const {loginValidation} = require("../utils/utils")
-
+const passport = require("passport");
+const { loginValidation } = require("../utils/utils");
 
 //authRouter
 exports.router = (() => {
@@ -17,7 +16,11 @@ exports.router = (() => {
    * @apiSuccess {Boolean} auth authenticated status.
    * @apiSuccess {Object} user user object from bd.
    */
-  authRouter.get("/", passport.authenticate("jwt", {session: false}),authHandler.isAuthenticated);
+  authRouter.get(
+    "/",
+    passport.authenticate("jwt", { session: false }),
+    authHandler.isAuthenticated
+  );
 
   /**
    * @api {GET} /api/auth/logout Ends user session
@@ -47,6 +50,36 @@ exports.router = (() => {
 
   authRouter.post("/login", loginValidation, authHandler.strategy);
 
+  authRouter.get(
+    "/login/facebook",
+    passport.authenticate("facebook", { scope: ["email"] })
+  );
+
+  authRouter.get(
+    "/login/facebook/callback",
+    passport.authenticate("facebook", {
+      session: false,
+    }),
+    authHandler.connect
+  );
+
+  authRouter.get(
+    "/login/google",
+    passport.authenticate("google", {
+      scope: [
+        "https://www.googleapis.com/auth/userinfo.profile",
+        "https://www.googleapis.com/auth/userinfo.email",
+      ],
+    })
+  );
+
+  authRouter.get(
+    "/login/google/callback",
+    passport.authenticate("google", {
+      session: false,
+    }),
+    authHandler.connect
+  );
   authRouter.post("/confirm", authHandler.confirm);
 
   authRouter.post("/forgot", authHandler.forgotInitiate);

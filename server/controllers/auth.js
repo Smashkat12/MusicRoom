@@ -11,13 +11,38 @@ const { generateServerError } = require("../utils/utils");
 
 module.exports = {
   isAuthenticated: (req, res) => {
-    if (req.isAuthenticated()) res.status(200).json({ code: 200,auth: true, user: req.user });
-    else res.status(401).json({code: 401, auth: false });
+    if (req.isAuthenticated())
+      res.status(200).json({ code: 200, auth: true, user: req.user });
+    else res.status(401).json({ code: 401, auth: false });
   },
 
   logout: (req, res) => {
     req.logout();
     res.json({ disconnected: true });
+  },
+
+  connect: (req, res) => {
+    if (req.user) {
+      const payload = {
+        _id: req.user._id,
+        username: req.user.username,
+      };
+
+      JWT.sign(payload, keys.JWT.secret, { expiresIn: "1d" }, (err, token) => {
+        return res.status(200).send({
+          code: 200,
+          success: true,
+          token: `Bearer ${token}`,
+          message: "Login sucessful",
+        });
+      });
+    } else {
+      return res.status(401).send({
+        code: 401,
+        success: false,
+        message: "Authentication failed",
+      });
+    }
   },
 
   strategy: (req, res, next) => {

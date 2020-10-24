@@ -20,9 +20,17 @@ exports.router = (() => {
 
   
 
-  userRouter.delete("/user", userHandler.delUserById);
+  userRouter.delete(
+    "/user",
+    passport.authenticate("jwt", { session: false }),
+    userHandler.delUserById
+  );
   
-  userRouter.put("/user", userHandler.putUserById);
+  userRouter.put(
+    "/:id",
+    passport.authenticate("jwt", { session: false }),
+    userHandler.putUserById
+  );
 
 
   userRouter.get("/user/:username", userHandler.getUserByUsername);
