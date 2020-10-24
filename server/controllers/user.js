@@ -40,7 +40,7 @@ module.exports = {
 
       const mailOptions = {
         from: "musicroom811@gmail.com",
-        to: email,
+        to: req.user.email,
         subject: "Music Room - Email verification",
         html: message,
       };
@@ -49,7 +49,7 @@ module.exports = {
 		  console.log(chalk.bold.redBright("Email error: "), error);
 		  
         }
-        console.log(chalk.bold.greenBright("Email sent: "), req.body.email);
+        console.log(chalk.bold.greenBright("Email sent: "), req.user.email);
         return res.status(201).send({
           code: 201,
           success: true,
