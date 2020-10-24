@@ -11,8 +11,8 @@ const { generateServerError } = require("../utils/utils");
 
 module.exports = {
   isAuthenticated: (req, res) => {
-    if (req.isAuthenticated()) res.json({ auth: true, user: req.user });
-    else res.json({ auth: false });
+    if (req.isAuthenticated()) res.status(200).json({ code: 200,auth: true, user: req.user });
+    else res.status(401).json({code: 401, auth: false });
   },
 
   logout: (req, res) => {
