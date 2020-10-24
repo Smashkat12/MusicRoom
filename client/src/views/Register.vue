@@ -13,6 +13,12 @@
           <p>{{ succ }}</p>
         </div>
         <form>
+          
+
+
+
+
+          
           <input
             type="text"
             placeholder="Enter username"
@@ -158,7 +164,7 @@ export default {
         password: this.password,
         confirmPassword: this.confirmPassword,
       };
-      var results = await axios_post("/api/users/user", data);
+      var results = await axios_post("/api/user/register", data);
       if (results !== "Oops!") {
         if (results.data.success === false) {
           this.errors = results.data.message;
