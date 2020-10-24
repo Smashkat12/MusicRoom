@@ -1,9 +1,9 @@
 const User = require("../models/user");
-const { validationResult } = require("express-validator");
+
 const nodemailer = require("nodemailer");
 const chalk = require("chalk");
 const bcrypt = require("bcryptjs");
-const { v4: uuidv4 } = require("uuid");
+
 const { generateServerError } = require("../utils/utils");
 
 module.exports = {
@@ -15,82 +15,10 @@ module.exports = {
     });
   },
   //registers a user & sends email confirmation
+
   postUser: (req, res) => {
-    //Validation
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-      const resStatusCode = 400;
-      const fullError = { success: false, errors: errors.array() };
-      const message = "Input validation error";
-      return generateServerError(res, resStatusCode, fullError, message);
-    }
-
-    const {
-      firstname,
-      lastname,
-      username,
-      password,
-      email,
-      confirmPassword,
-    } = req.body;
-
-    //check if password and password confirm match
-    if (password !== confirmPassword) {
-      res.status(400).json({
-        code: 400,
-        success: false,
-        message: "Passwords dont match.",
-      });
-    }
-
-    //check if username provided is unique
-    User.findOne({ username }, (err, user) => {
-      if (err) {
-        res.json({ success: false });
-      }
-
-      if (user) {
-        return res.status(400).json({
-          code: 400,
-          success: false,
-          message: "User with provided email or username already exist",
-        });
-      }
-	});
-	
-    //check if username provided is unique
-    User.findOne({ email }, (err, user) => {
-      if (err) {
-        res.json({ success: false });
-      }
-
-      if (user) {
-        return res.status(400).json({
-          code: 400,
-          success: false,
-          message: "User with provided email or username already exist",
-        });
-      }
-    });
-
-    const confirmKey = uuidv4();
-    const confirmationLink = `http://localhost:8080/confirm/${confirmKey}`;
-
-    const newUser = User({
-      firstname: firstname,
-      lastname: lastname,
-      username: username,
-      password: bcrypt.hashSync(password, 10),
-      email: email,
-      confirmKey: confirmKey,
-      forgotKey: "",
-    });
-
-    newUser.save(async (err) => {
-      if (err) {
-        return res.json({ code: 500, success: false, error: err });
-      }
+    if (req.user) {
+      const confirmationLink = `http://localhost:8080/confirm/${req.user.confirmKey}`;
 
       const transporter = nodemailer.createTransport({
         service: "gmail",
@@ -104,31 +32,31 @@ module.exports = {
       });
 
       const message = `Welcome, <strong>${req.body.username}</strong>
-      <p>We're glad to see you on Music Room, in order to start using our platform, we need to confirm that you've entered the right e-mail on the signup form.</p>
-      <p>Click on the button below to confirm your email, your account will be activated and you will be able to navigate on the Music Room platform.</p>
-      <p>See you soon on Music Room !<br></p>
-      <p><a href="${confirmationLink}" class="es-button" target="_blank" style="mso-style-priority:100 !important;text-decoration:none;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;font-size:20px;color:#FFFFFF;border-style:solid;border-color:#7BA9F7;border-width:15px 25px;display:inline-block;background:#7BA9F7;border-radius:2px;font-weight:normal;font-style:normal;line-height:24px;width:auto;text-align:center;">Activate account</a></span></td></tr></table></td></tr></table></td></tr></table></td></tr></table><table class="es-content" cellspacing="0" cellpadding="0" align="center" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;table-layout:fixed !important;width:100%;"><tr style="border-collapse:collapse;"><td align="center" style="padding:0;Margin:0;"></p>
-      `;
+    <p>We're glad to see you on Music Room, in order to start using our platform, we need to confirm that you've entered the right e-mail on the signup form.</p>
+    <p>Click on the button below to confirm your email, your account will be activated and you will be able to navigate on the Music Room platform.</p>
+    <p>See you soon on Music Room !<br></p>
+    <p><a href="${confirmationLink}" class="es-button" target="_blank" style="mso-style-priority:100 !important;text-decoration:none;-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;font-size:20px;color:#FFFFFF;border-style:solid;border-color:#7BA9F7;border-width:15px 25px;display:inline-block;background:#7BA9F7;border-radius:2px;font-weight:normal;font-style:normal;line-height:24px;width:auto;text-align:center;">Activate account</a></span></td></tr></table></td></tr></table></td></tr></table></td></tr></table><table class="es-content" cellspacing="0" cellpadding="0" align="center" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;table-layout:fixed !important;width:100%;"><tr style="border-collapse:collapse;"><td align="center" style="padding:0;Margin:0;"></p>
+	`;
 
       const mailOptions = {
         from: "musicroom811@gmail.com",
-        to: email,
+        to: req.user.email,
         subject: "Music Room - Email verification",
         html: message,
       };
-
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-          console.log(chalk.bold.redBright("Email error: "), error);
+		  console.log(chalk.bold.redBright("Email error: "), error);
+		  
         }
-        console.log(chalk.bold.greenBright("Email sent: "), req.body.email);
+        console.log(chalk.bold.greenBright("Email sent: "), req.user.email);
         return res.status(201).send({
           code: 201,
           success: true,
           message: "user successfully registered",
         });
       });
-    });
+    }
   },
 
   //gets a specific user by ID

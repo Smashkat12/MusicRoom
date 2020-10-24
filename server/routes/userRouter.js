@@ -1,4 +1,5 @@
 const express = require("express");
+const passport = require("passport")
 const userHandler = require("../controllers/user");
 
 const { registerValidation } = require("../utils/utils");
@@ -14,7 +15,7 @@ exports.router = (() => {
   //POST
   // register new user
   //http://localhost:5000/api/user/register
-  userRouter.post("/register", registerValidation, userHandler.postUser);
+  userRouter.post("/register", passport.authenticate("register",),registerValidation, userHandler.postUser);
 
 
   
