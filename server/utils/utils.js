@@ -5,8 +5,6 @@ const { check } = require("express-validator");
 
 //Export
 export const generateServerError = (
-  res,
-  code,
   fullError,
   message,
   location = "server"
@@ -16,11 +14,7 @@ export const generateServerError = (
     fullError,
     message,
   };
-  return res.status(code).json({
-    code,
-    message,
-    fullError,
-  });
+  return errors;
 };
 
 
