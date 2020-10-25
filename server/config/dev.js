@@ -4,13 +4,13 @@ module.exports = {
       "mongodb+srv://musicroom:musicroom@cluster0.icn4w.mongodb.net/musicroom?retryWrites=true&w=majority",
   },
   FACEBOOK: {
-    clientID: "3378956088794112",
-    secret: "1d3d4bb2bc41a8daf7c139bcc97b870d",
+    clientID: "1506029193118389",
+    secret: "d2ff913318fe9b7c02f76a45905c5776",
   },
   GOOGLE: {
     clientID:
-      "857670490853-uupqhuflbgmj8u4osrsa8j3ol4e5abi5.apps.googleusercontent.com",
-    secret: "wOhD3ybQdj7kUN4aFTJmziC5",
+      "257167475234-7va00kj9qh7hf4s6od5i7c5m6r7f44qv.apps.googleusercontent.com",
+    secret: "VSsOEh4e1hDNO4oPR641H8BZ",
   },
   FORTY_TWO: {
     clientID:

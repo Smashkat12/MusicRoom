@@ -5,101 +5,75 @@
       <br /><br />
       <section>
         <div class="container">
-          <div class="row">
-            <div class="col-container">
-              <div class="col">
-                <h1>
-                  <span class="up">{{ username }}</span
-                  >'s Profile
-                </h1>
-                <div v-for="update in updates" :key="update">
-                  <small>{{ update }}</small>
+
+          <div class="profile">
+
+            <div class="profile-image">
+
+              <img src="https://images.unsplash.com/photo-1513721032312-6a18a42c8763?w=152&h=152&fit=crop&crop=faces" alt="">
+
+            </div>
+
+            <div class="profile-user-settings">
+
+              <h1 class="profile-user-name">{{ username }}</h1>
+
+              <button class="btn profile-settings-btn" aria-label="profile settings"><i class="fas fa-cog" aria-hidden="true"></i></button>
+
+            </div>
+
+            <div class="profile-stats">
+
+              <ul>
+                <li><span class="profile-stat-count">164</span> playlists</li>
+                <li><span class="profile-stat-count">128</span> events</li>
+                <li><span class="profile-stat-count">188</span> followers</li>
+                <li><span class="profile-stat-count">206</span> following</li>
+              </ul>
+
+            </div>
+
+            <div class="profile-bio">
+               <div class="col">
+                 <div id="err" v-for="error in errors" v-bind:key="error">
+                  <p>{{ error }}</p>
                 </div>
-                <div id="preview" v-if="image">
-                  <img :src="image" alt="" />
-                </div>
-                <div id="preview2" v-else>
-                  <img :src="pro_pic" alt="No Pic available" id="test" />
-                </div>
-                <br />
-                <form>
-                  <input
-                    type="file"
-                    name="photo"
-                    id=""
-                    @change="onFileSelected"
+                  <form>
+                    <label for="Username">Username</label>
+                    <input
+                    type="text"
+                    class="form-control"
+                    v-model="username"
                   />
-                </form>
-                <button class="buttons" @click="uploadImage">Upload</button>
-                <form>
+                    <label for="Firstname">Firstname</label>
+                    <input
+                    type="text"
+                    class="form-control"
+                    v-model="firstname"
+                  />
+                    <label for="Lastname">Lastname</label>
                   <input
                     type="text"
                     class="form-control"
-                    v-model="first_name"
+                    v-model="lastname"
                   />
-                  <br />
-                </form>
-                <input
-                  class="buttons"
-                  type="submit"
-                  value="Update First Name"
-                  @click="update_first"
-                /><br /><br />
-                <form>
-                  <input type="text" class="form-control" v-model="last_name" />
-                  <br />
-                </form>
-                <input
-                  class="buttons"
-                  type="submit"
-                  value="Update Last Name"
-                  @click="update_last"
-                /><br /><br />
-                <form>
-                  <input type="email" class="form-control" v-model="email" />
-                  <br />
-                </form>
-                <input
-                  class="buttons"
-                  type="submit"
-                  value="Update Email"
-                  @click="update_email"
-                /><br />
-                <br />
-                <form>
+                  <label for="Email Address">Email Address</label>
                   <input
-                    type="password"
+                    type="text"
                     class="form-control"
-                    v-model="current_pass"
-                    placeholder="Enter current password"
+                    v-model="email"
                   />
-                  <br />
+                  </form>
                   <input
-                    type="password"
-                    class="form-control"
-                    v-model="new_pass"
-                    placeholder="Enter new password"
-                  />
-                  <br />
-                  <input
-                    type="password"
-                    class="form-control"
-                    v-model="confirm_pass"
-                    placeholder="Confirm new password"
-                  />
-                  <br />
-                </form>
-                <input
                   class="buttons"
                   type="submit"
-                  value="Update Password"
-                  @click="validate"
-                /><br /><br />
-                <br />
-                <br />
-              </div>
+                  value="Update Profile"
+                  @click="validateProfile"
+                />
+               </div>
             </div>
           </div>
+          <!-- End of profile section -->
         </div>
       </section>
     </div>
@@ -110,9 +84,11 @@
 <script>
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { secure_password, axios_post } from "../functions/functions";
+import { axios_put,
+         validUsername,
+         validName,
+         validEmail } from "../functions/functions";
 import axios from "axios";
-import jwt from "njwt";
 export default {
   components: {
     "app-header": Header,
@@ -120,155 +96,84 @@ export default {
   },
   data() {
     return {
+      id:null,
+      submit: true,
       username: "",
-      new_username: "",
-      first_name: "",
+      firstname: "",
       email: "",
-      last_name: "",
-      message: "",
-      selectedFile: null,
-      updates: [],
-      current_pass: "",
-      new_pass: "",
-      confirm_pass: "",
+      lastname: "",
       errors: [],
-      url: null,
-      pro_pic: "",
-      image: "",
-      remoteUrl: "",
-      base64: "",
+      success: []
     };
   },
   methods: {
-    onFileSelected(event) {
-      this.selectedFile = event.target.files[0];
-      this.url = URL.createObjectURL(this.selectedFile);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.image = e.target.result;
-        this.base64 = reader.result;
-      };
-      reader.readAsDataURL(this.selectedFile);
-    },
-    validate() {
-      let check = secure_password(this.new_pass);
-      if (check !== "good") {
-        this.errors.push(check);
+    validateProfile(){
+      this.errors = [];
+      var checkUsername = validUsername(this.username);
+      var checkFirst = validName("First name", this.firstname);
+      var checkLast = validName("Last name", this.lastname);
+      var checkEmail = validEmail(this.email);
+      if (checkUsername !== "good") {
+        this.errors.push(checkUsername);
+        return;
+      } else if (checkFirst !== "good") {
+        this.errors.push(checkFirst);
+        return;
+      } else if (checkLast !== "good") {
+        this.errors.push(checkUsername);
         return;
       }
-      if (this.new_pass != this.confirm_pass) {
-        this.errors.push("Passwords do not match");
+      else if(!checkEmail){
+        this.errors.push("Invalid email");
         return;
       }
-      if (this.errors.length == 0) {
-        this.update_password();
+       if (this.errors.length == 0) {
+        this.updateProfile();
       }
     },
-    uploadImage() {
-      if (!this.selectedFile) {
-        this.errors.push("Select image");
-        return;
-      }
-      let type = this.selectedFile.type;
-      const data = new FormData();
-      data.append("photo", this.selectedFile);
-      data.append("username", this.username);
-      data.append("base64image", this.base64);
-      let config = {
-        header: {
-          "Content-Type": "application/json",
-        },
-      };
-      const path =
-        "http://localhost:5000/api/users/upload?username=" + this.username;
-      let nn = type.split("/");
-      if (nn[0] === "image") {
-        axios
-          .post(path, data, config)
-          .then((result) => {
-            this.message = result;
-            if (result.data.changedRows) {
-              this.updates.push("Profile picture updated!");
-            }
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      }
-    },
-    async update_details(data, url, field) {
-      this.updates = [];
-      let response = await axios_post("/api/users/update-" + url, data);
-      if (response.data.changedRows) {
-        this.updates.push(field + " updated!");
-      } else if (response.data.data.changedRows) {
-        this.updates.push(field + " updated!");
-        this.username = response.data.username;
-      }
-    },
-    update_username() {
-      this.updates = [];
-      let data = {
-        email: this.email,
-        username: escape(this.new_username),
-      };
-      this.update_details(data, "username/", "Username");
-      localStorage.setItem("user", this.new_username);
-    },
-    update_first() {
-      this.updates = [];
-      let data = {
-        email: this.email,
-        first_name: escape(this.first_name),
-      };
-      this.update_details(data, "first/", "First name");
-    },
-    update_last() {
-      this.updates = [];
-      let data = {
-        email: this.email,
-        last_name: escape(this.last_name),
-      };
-      this.update_details(data, "last/", "Last name");
-    },
-    update_email() {
-      this.updates = [];
-      let data = {
-        email: this.email,
+    updateProfile: async function () {
+      this.errors = [];
+      const data = {
+        id: this._id,
+        firstname: escape(this.firstname),
+        lastname: escape(this.lastname),
         username: escape(this.username),
+        email: escape(this.email),
       };
-      this.update_details(data, "email/", "Email");
-    },
-    update_password() {
-      this.updates = [];
-      let data = {
-        username: this.username,
-        old_pass: this.current_pass,
-        new_pass: this.new_pass,
-        confirm_pass: this.confirm_pass,
-      };
-      this.update_details(data, "password/", "Passsword");
-      this.current_pass = "";
-      this.new_pass = "";
-      this.confirm_pass = "";
+      var results = await axios_put(`/api/user/${this._id}`, data);
+      if (results !== "Oops!") {
+        if (results.data.success == false) {
+          this.errors = results.data.message;
+          console.log(this.errors);
+        } else if (results.data.success) {
+          this.success.push("Profile Updated");
+          this.clean_input();
+          this.$router.push("/profile");
+        }
+      } else {
+        this.errors.push("An unexpected error happened");
+      }
     },
     async getUserData() {
       let token = localStorage.getItem("jwt");
-      let decode = await jwt.verify(token, "secret");
       let options = {
         method: "get",
         headers: { Authorization: token },
-        url: "http://localhost:5000/api/users/me/" + decode.body.name,
+        url: "http://localhost:5000/api/auth"
       };
       let user = await axios(options).catch(() => {
-        console.log("error");
+        console.log("Unable to process request");
       });
-      this.username = user.data.username;
-      this.email = user.data.email;
-      this.last_name = user.data.last_name;
-      this.first_name = user.data.first_name;
-      this.pro_pic = user.data.pro_pic;
-      localStorage.setItem("user", this.username);
+      if(user.data.auth == true)
+      {
+        this.id = user.data.user._id
+        this.username = user.data.user.username;
+        this.email = user.data.user.email;
+        this.lastname = user.data.user.lastname;
+        this.firstname = user.data.user.firstname;
+      }else{
+        console.log("Not Authorised")
+      }
     },
   },
   created() {
@@ -278,33 +183,92 @@ export default {
 </script>
 
 <style scoped>
-#preview {
-  justify-content: center;
-  align-items: center;
-}
-#preview img {
-  width: 200px;
-  height: 200px;
-}
-#preview2 {
-  justify-content: center;
-  align-items: center;
-}
-#preview2 img {
-  width: 200px;
-  height: 200px;
+/* Profile Section */
+
+.profile {
+    padding: 1rem 0;
 }
 
-.col-container {
-  display: table;
-  width: 100%;
+.profile::after {
+    content: "";
+    display: block;
+    clear: both;
 }
 
-.col {
-  display: table-cell;
+.profile-image {
+    float: left;
+    width: calc(33.333% - 1rem);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 3rem;
 }
 
-.up {
-  text-transform: capitalize;
+.profile-image img {
+    border-radius: 50%;
+}
+
+.profile-user-settings,
+.profile-stats,
+.profile-bio {
+    float: left;
+    width: calc(66.666% - 2rem);
+}
+
+.profile-user-settings {
+    margin-top: 1.1rem;
+}
+
+.profile-user-name {
+    display: inline-block;
+    font-size: 1.5rem;
+    font-weight: 300;
+}
+
+.profile-edit-btn {
+    font-size: 1rem;
+    line-height: 1.8;
+    border: 0.1rem solid #dbdbdb;
+    border-radius: 0.3rem;
+    padding: 0 2.4rem;
+    margin-left: 2rem;
+}
+
+.profile-settings-btn {
+    font-size: 1rem;
+    margin-left: 1rem;
+}
+
+.profile-stats {
+    margin-top: 0rem;
+}
+
+.profile ul{
+  padding-left: 0rem;
+}
+
+.profile-stats li {
+    display: inline-block;
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-right: 1rem;
+    cursor: pointer;
+}
+
+.profile-stats li:last-of-type {
+    margin-right: 0;
+}
+
+.profile-bio {
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    margin-top: 2.3rem;
+}
+
+.profile-real-name,
+.profile-stat-count,
+.profile-edit-btn {
+    font-weight: 600;
 }
 </style>

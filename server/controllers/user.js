@@ -46,8 +46,7 @@ module.exports = {
       };
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-		  console.log(chalk.bold.redBright("Email error: "), error);
-		  
+          console.log(chalk.bold.redBright("Email error: "), error);
         }
         console.log(chalk.bold.greenBright("Email sent: "), req.user.email);
         return res.status(201).send({
@@ -56,7 +55,9 @@ module.exports = {
           message: "user successfully registered",
         });
       });
-    }
+    } else {
+		return res.status(401).json({code: 400, success: false, message: "Seems like you already have an account, did you forget your password?"})
+	}
   },
 
   //gets a specific user by ID
@@ -90,13 +91,6 @@ module.exports = {
     if (req.body.username) updateQuery.username = req.body.username;
     if (req.body.password)
       updateQuery.password = bcrypt.hashSync(req.body.password, 10);
-    if (req.body.avatar) updateQuery.avatar = req.body.avatar;
-
-    if (req.body.birthdate) updateQuery.birthdate = req.body.birthdate;
-
-    if (req.body.age) updateQuery.age = req.body.age;
-    if (req.body.gender) updateQuery.gender = req.body.gender;
-    if (req.body.language) updateQuery.language = req.body.language;
     if (req.body.email) updateQuery.email = req.body.email;
 
     User.find({ _id: req.user._id }, (err, user) => {

@@ -10,7 +10,7 @@
               >
             </div>
             <div class="logo" v-if="is_logged_in">
-              <router-link to="/library"
+              <router-link to="/landing"
                 ><span class="icon">MR</span>Music Room</router-link
               >
             </div>
@@ -20,13 +20,13 @@
             </ul>
             <ul v-else>
               <li class="btn sec">
-                <router-link to="/profile">Profile</router-link>
-              </li>
-              <li class="btn sec">
                 <router-link to="/landing">Music</router-link>
               </li>
               <li class="btn sec">
                 <router-link to="/search">Search Music</router-link>
+              </li>
+              <li class="btn sec">
+                <router-link to="/profile">Profile</router-link>
               </li>
               <li class="btn sec">
                 <button class="btn sec" @click="logout">Log out</button>

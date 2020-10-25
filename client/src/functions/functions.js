@@ -30,6 +30,16 @@ export async  function axios_post(url, data) {
     }
 }
 
+export async  function axios_put(url, data) {
+    const path = 'http://localhost:5000' + url
+    try {
+        const result = await axios.put(path, data)
+        return result
+    } catch (error) {
+        return "Oops!"
+    }
+}
+
 export async function post_comment(url, data) {
     const path = 'http://localhost:5000' + url
     try {

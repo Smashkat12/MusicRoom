@@ -14,7 +14,6 @@ const UserSchema = new Schema({
   lastname: { type: String },
   username: { type: String, required: true, unique: true },
   password: { type: String, visibility: 1 },
-  avatar: { type: String },
   email: {
     type: String,
     unique: true,
