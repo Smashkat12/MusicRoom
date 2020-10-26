@@ -165,18 +165,14 @@ export default {
         confirmPassword: this.confirmPassword,
       };
       var results = await axios_post("/api/user/register", data);
-      if (results !== "Oops!") {
-        if (results.data.success === false) {
-          this.errors = results.data.message;
-          console.log(this.errors);
-        } else if (results.data.success) {
+      if (results == "Oops!") {
+            this.errors.push("Account Already Exists");
+      } else 
+      {
           this.success.push("Registration successful! You can now log in");
           this.clean_input();
           sweet("", "Registration Successful", "success");
           this.$router.push("/login");
-        }
-      } else {
-        this.errors.push("An unexpected error happened");
       }
     },
     clean_input() {
