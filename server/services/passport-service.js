@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const LocalStrategy = require("passport-local").Strategy;
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const FacebookStrategy = require("passport-facebook").Strategy;
+const DeezerStrategy = require("passport-deezer").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 const JwtStrategy = require("passport-jwt").Strategy;
 const { validationResult } = require("express-validator");
@@ -250,6 +251,61 @@ module.exports = function (passport) {
       }
     )
   );
+
+  /* Deezer Strategy */
+  passport.use(
+    new DeezerStrategy(
+      {
+        clientID: keys.DEEZER.clientID,
+        clientSecret: keys.DEEZER.secret,
+        callbackURL: "http://localhost:5000/api/auth/login/deezer/callback",
+        passReqToCallback: true,
+      },
+      function (req, accessToken, refreshToken, profile, done) {
+        process.nextTick(function () {
+          if (!req.user) {
+            User.findOne({ _deezerId: profile.id }, function (err, user) {
+              if (err) return done(err);
+              if (user) {
+                if (!user.deezerToken) {
+                  user.deezerToken = accessToken;
+                  user.save(function (err) {
+                    if (err) return done(err);
+                  });
+                }
+                return done(null, user);
+              } else {
+
+                var newUser = new User();
+                newUser._deezerId = profile.id;
+                newUser.deezerToken = accessToken;
+                newUser.firstname = profile.name.givenName;
+                newUser.lastname = profile.name.familyName;
+                newUser.username = `${profile.name.givenName}${profile.name.familyName}`;
+                newUser.email = profile.emails[0].value;
+                newUser.confirmKey = "confirmed";
+
+                newUser.save(function (err) {
+                  if (err) throw err;
+                  return done(null, newUser);
+                });
+              }
+            });
+          } else {
+            var user = req.user;
+            user._deezerId = profile.id;
+            user.deezerToken = accessToken;
+
+            user.save(function (err) {
+              if (err) throw err;
+              return done(null, user);
+            });
+          }
+        });
+      }
+    )
+  );
+
 
   /* set session cookie */
   passport.serializeUser((user, done) => {
