@@ -56,8 +56,15 @@ module.exports = {
         });
       });
     } else {
-		return res.status(401).json({code: 400, success: false, message: "Seems like you already have an account, did you forget your password?"})
-	}
+      return res
+        .status(401)
+        .json({
+          code: 400,
+          success: false,
+          message:
+            "Seems like you already have an account, did you forget your password?",
+        });
+    }
   },
 
   //gets a specific user by ID

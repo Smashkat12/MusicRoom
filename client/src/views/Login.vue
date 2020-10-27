@@ -75,6 +75,7 @@ export default {
       password: "",
       err: [],
       uid: "",
+      token: this.$route.params.token ? this.$route.params.token : "",
     };
   },
   methods: {
@@ -90,6 +91,17 @@ export default {
         return;
       } else {
         this.login();
+      }
+    },
+    checkToken() {
+      console.log("Inside check token");
+      if (window.location.search) {
+        const qString = window.location.search;
+        const token = qString.split("=");
+        const decodedToken = decodeURIComponent(token[1]);
+        localStorage.setItem("jwt", decodedToken);
+        console.log("we got the token buddy");
+        this.$router.push({ name: "Landing" });
       }
     },
     async login() {
@@ -110,21 +122,13 @@ export default {
         this.err.push("an unexpected error occured");
       }
     },
-
     async authLogin() {
       let res = await axios.get("api/auth/login/google");
-      // let data = res.data;
-      if (res.data.success === false) {
-        console.log("we got an error bafana");
-        this.err.push(res);
-      } else if (res.data.success && res.data.token) {
-        console.log("We have a tokken, just about to save it");
-        localStorage.setItem("jwt", res.data.token);
-        this.$router.push({ name: "Landing" });
-      } else {
-        this.err.push("an unexpected error occured");
-      }
+      localStorage.setItem("jwt", res.data.token);
     },
+  },
+  created() {
+    this.checkToken();
   },
 };
 </script>

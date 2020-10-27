@@ -1,7 +1,7 @@
 module.exports = {
   MONGODB: {
     mongoURI:
-      "mongodb+srv://musicroom:musicroom@cluster0.icn4w.mongodb.net/musicroom?retryWrites=true&w=majority",
+      "mongodb+srv://Hypertube:Hypertube@cluster0.1mxy5.mongodb.net/Hypertube?retryWrites=true&w=majority",
   },
   FACEBOOK: {
     clientID: "1506029193118389",

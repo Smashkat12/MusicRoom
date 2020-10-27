@@ -29,19 +29,10 @@ module.exports = {
       };
 
       JWT.sign(payload, keys.JWT.secret, { expiresIn: "1d" }, (err, token) => {
-        return res.status(200).send({
-          code: 200,
-          success: true,
-          token: `Bearer ${token}`,
-          message: "Login sucessful",
-        });
+        res.redirect(`http://localhost:8080/login?token=Bearer ${token}`);
       });
     } else {
-      return res.status(401).send({
-        code: 401,
-        success: false,
-        message: "Authentication failed",
-      });
+      res.redirect("http://localhost:8080/login");
     }
   },
 
