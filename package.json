@@ -41,6 +41,7 @@
     "nodemailer": "^6.4.14",
     "nyaapi": "^2.3.3",
     "passport": "^0.4.1",
+    "passport-deezer": "^0.2.0",
     "passport-facebook": "^3.0.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-jwt": "^4.0.0",

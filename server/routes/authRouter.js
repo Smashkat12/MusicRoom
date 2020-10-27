@@ -80,6 +80,20 @@ exports.router = (() => {
     }),
     authHandler.connect
   );
+
+  authRouter.get(
+    "/login/deezer",
+    passport.authenticate("deezer", {scope: ['profile', 'email']})
+  );
+
+  authRouter.get(
+    "/login/deezer/callback",
+    passport.authenticate("deezer", {
+      session: false,
+    }),
+    authHandler.connect
+  );
+
   authRouter.post("/confirm", authHandler.confirm);
 
   authRouter.post("/forgot", authHandler.forgotInitiate);
