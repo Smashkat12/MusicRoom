@@ -86,6 +86,7 @@ app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs)); //create mi
 app.use("/api/auth", authRouter.router);
 app.use("/api/user", userRouter.router);
 
+
 /* ****************************************************END OF ROUTES **************************************************** */
 
 /* Server Setup */

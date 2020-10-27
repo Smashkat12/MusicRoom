@@ -66,12 +66,12 @@
           />
           <br /><br />
         </form>
-        <button class="buttons" v-on:click="validate">Submit</button
-        >
+        <button class="buttons" v-on:click="validate">Submit</button>
         <hr />
         <small
           >Register using
-          <a href="http://localhost:5000/api/users/auth/google">google</a>
+          <a href="http://localhost:5000/api/auth/login/google">Google+</a>
+          <a href="http://localhost:5000/api/auth/login/Facebook">Facebook</a>
         </small>
         |
         <small
@@ -92,7 +92,8 @@ import {
   secure_password,
   axios_post,
   validUsername,
-  validName,validEmail,
+  validName,
+  validEmail,
 } from "../functions/functions";
 import sweet from "sweetalert";
 
@@ -130,8 +131,7 @@ export default {
       } else if (checkLast !== "good") {
         this.errors.push(checkUsername);
         return;
-      }
-      else if(!checkEmail){
+      } else if (!checkEmail) {
         this.errors.push("Invalid email");
         return;
       }
@@ -160,13 +160,12 @@ export default {
       };
       var results = await axios_post("/api/user/register", data);
       if (results == "Oops!") {
-            this.errors.push("Account Already Exists");
-      } else 
-      {
-          this.success.push("Registration successful! You can now log in");
-          this.clean_input();
-          sweet("", "Registration Successful", "success");
-          this.$router.push("/login");
+        this.errors.push("Account Already Exists");
+      } else {
+        this.success.push("Registration successful! You can now log in");
+        this.clean_input();
+        sweet("", "Registration Successful", "success");
+        this.$router.push("/login");
       }
     },
     clean_input() {
