@@ -40,69 +40,81 @@ module.exports = function (passport) {
       },
       function (req, email, username, done) {
         process.nextTick(() => {
-          //Validation
-          const errors = validationResult(req);
-          if (!errors.isEmpty()) {
-            const resStatusCode = 400;
-            const fullError = { success: false, errors: errors.array() };
-            const message = "Input validation error";
-            return done(generateServerError(resStatusCode, fullError, message));
-          }
-          //check if username provided is unique
-          User.findOne({ username }, (err, existingUser) => {
-            if (err) {
-              done(err);
-            }
-
-            if (existingUser) {
-              return done(null, false, { message: "username taken" });
+          if (!req.user) {
+            //Validation
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+              const resStatusCode = 400;
+              const fullError = { success: false, errors: errors.array() };
+              const message = "Input validation error";
+              return done(generateServerError(resStatusCode, fullError, message));
             }
             //check if username provided is unique
-            User.findOne({ email }, (err, existingUser) => {
+            User.findOne({ username }, (err, existingUser) => {
               if (err) {
                 done(err);
               }
 
               if (existingUser) {
-                return done(null, false, { message: "email taken" });
+                return done(null, false, { message: "username taken" });
               }
-
-              //create user
-              const {
-                firstname,
-                lastname,
-                username,
-                password,
-                email,
-                confirmPassword,
-              } = req.body;
-
-              //check if password and password confirm match
-              if (password !== confirmPassword) {
-                return done(null, false, { message: "Passwords dont match" });
-              }
-
-              const confirmKey = uuidv4();
-              const newUser = User({
-                firstname: firstname,
-                lastname: lastname,
-                username: username,
-                password: bcrypt.hashSync(password, 10),
-                email: email,
-                confirmKey: confirmKey,
-                forgotKey: "",
-              });
-
-              newUser.save((err, user) => {
+              //check if username provided is unique
+              User.findOne({ email }, (err, existingUser) => {
                 if (err) {
-                  return done(err);
+                  done(err);
                 }
-                if (user) {
-                  return done(null, user);
+
+                if (existingUser) {
+                  return done(null, false, { message: "email taken" });
                 }
+
+                //create user
+                const {
+                  firstname,
+                  lastname,
+                  username,
+                  password,
+                  email,
+                  confirmPassword,
+                } = req.body;
+
+                //check if password and password confirm match
+                if (password !== confirmPassword) {
+                  return done(null, false, { message: "Passwords dont match" });
+                }
+
+                const confirmKey = uuidv4();
+                const newUser = User({
+                  firstname: firstname,
+                  lastname: lastname,
+                  username: username,
+                  password: bcrypt.hashSync(password, 10),
+                  email: email,
+                  confirmKey: confirmKey,
+                  forgotKey: "",
+                });
+
+                newUser.save((err, user) => {
+                  if (err) {
+                    return done(err);
+                  }
+                });
               });
             });
-          });
+          } else {
+            var user = req.user;
+
+            user.username = req.body.username;
+            user.email = email;
+            user.password = user.generateHash(password);
+            user.save((err, user) => {
+              if (err) {
+                return done(err);
+              }
+              return done(null, user);
+            }
+            )
+          }
         });
       }
     )
@@ -181,9 +193,8 @@ module.exports = function (passport) {
             });
           } else {
             var user = req.user;
-            user.facebook.id = profile.id;
-            user.facebook.token = accessToken;
-
+            user._facebookId = profile.id;
+            user.facebookToken = accessToken;
             user.save(function (err) {
               if (err) throw err;
               return done(null, user);
@@ -219,7 +230,7 @@ module.exports = function (passport) {
                 return done(null, user);
               } else {
 
-				//include check for email in db
+                //include check for email in db
                 var newUser = new User();
                 newUser._googleId = profile.id;
                 newUser.googleToken = accessToken;

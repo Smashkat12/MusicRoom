@@ -4,8 +4,8 @@ module.exports = {
       "mongodb+srv://musicroom:musicroom@cluster0.icn4w.mongodb.net/musicroom?retryWrites=true&w=majority",
   },
   FACEBOOK: {
-    clientID: "1506029193118389",
-    secret: "d2ff913318fe9b7c02f76a45905c5776",
+    clientID: "794995081281788",
+    secret: "eb6f4ac91e7833c57970c5c05097aaa7",
   },
   GOOGLE: {
     clientID:
