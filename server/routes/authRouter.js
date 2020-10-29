@@ -49,15 +49,28 @@ exports.router = (() => {
    */
 
   authRouter.post("/login", loginValidation, authHandler.strategy);
+  
 
   authRouter.get(
     "/login/facebook",
     passport.authenticate("facebook", { scope: ["email"] })
   );
+  authRouter.get(
+    "/link/facebook",
+    passport.authorize("facebook", { scope: ["email"] })
+  );
 
   authRouter.get(
     "/login/facebook/callback",
     passport.authenticate("facebook", {
+      session: false,
+    }),
+    authHandler.connect
+  );
+
+  authRouter.get(
+    "/link/facebook/callback",
+    passport.authorize("facebook", {
       session: false,
     }),
     authHandler.connect
@@ -74,8 +87,26 @@ exports.router = (() => {
   );
 
   authRouter.get(
+    "/link/google",
+    passport.authorize("google", {
+      scope: [
+        "https://www.googleapis.com/auth/userinfo.profile",
+        "https://www.googleapis.com/auth/userinfo.email",
+      ],
+    })
+  );
+
+  authRouter.get(
     "/login/google/callback",
     passport.authenticate("google", {
+      session: false,
+    }),
+    authHandler.connect
+  );
+
+  authRouter.get(
+    "/link/google/callback",
+    passport.authorize("google", {
       session: false,
     }),
     authHandler.connect
@@ -87,8 +118,21 @@ exports.router = (() => {
   );
 
   authRouter.get(
+    "/link/deezer",
+    passport.authorize("deezer", {scope: ['profile', 'email']})
+  );
+
+  authRouter.get(
     "/login/deezer/callback",
     passport.authenticate("deezer", {
+      session: false,
+    }),
+    authHandler.connect
+  );
+
+  authRouter.get(
+    "/link/deezer/callback",
+    passport.authorize("deezer", {
       session: false,
     }),
     authHandler.connect
