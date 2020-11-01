@@ -63,6 +63,19 @@
           >
         </b-col>
       </b-row>
+      <br/>
+      <b-row>
+        <b-col sm="12">
+            <div>
+              <b-tabs content-class="mt-3" justified>
+                <b-tab title="Charts" active><h3>Charts</h3></b-tab>
+                <b-tab title="Playlists"><h3>Playlists</h3></b-tab>
+                <b-tab title="Listening History"><h3>Listening History</h3></b-tab>
+                <b-tab title="Delegations"><h3>Delegations</h3></b-tab>
+              </b-tabs>
+            </div>
+        </b-col>
+      </b-row>
     </b-container>
 
     <div>
