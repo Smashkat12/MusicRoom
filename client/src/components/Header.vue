@@ -10,7 +10,7 @@
           </b-navbar-brand>
 
           <b-navbar-brand class="logo" v-if="is_logged_in">
-            <router-link to="/"
+            <router-link to="/landing"
                       ><span class="icon">MR</span>Music Room
             </router-link>
           </b-navbar-brand>
@@ -30,7 +30,6 @@
                   <em>{{ username }}</em>
                 </template>
                 <b-dropdown-item style="background-color: #5e8465 !important"><router-link to="/profile">Profile</router-link></b-dropdown-item>
-                <b-dropdown-item style="background-color: #5e8465 !important"><router-link to="/changepassword">Change Password</router-link></b-dropdown-item>
                 <b-dropdown-item style="background-color: #5e8465 !important"><button class="btn sec" @click="logout">Log out</button></b-dropdown-item>
               </b-nav-item-dropdown>
             </b-navbar-nav>
