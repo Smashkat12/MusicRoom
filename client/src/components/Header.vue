@@ -21,6 +21,8 @@
             <b-navbar-nav class="ml-auto" v-if="!is_logged_in">
                 <b-nav-item><router-link to="/register">Register</router-link></b-nav-item>
                 <b-nav-item><router-link to="/login">Login</router-link></b-nav-item>
+                <b-nav-item><a target="_blank" href="http://localhost:5000/api/docs">Docs</a></b-nav-item>
+
             </b-navbar-nav>          
             <b-navbar-nav class="ml-auto" v-else>
                 <b-nav-item><router-link to="/landing">Explorer</router-link></b-nav-item>
