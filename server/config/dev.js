@@ -12,10 +12,10 @@ module.exports = {
       "257167475234-7va00kj9qh7hf4s6od5i7c5m6r7f44qv.apps.googleusercontent.com",
     secret: "VSsOEh4e1hDNO4oPR641H8BZ",
   },
-  FORTY_TWO: {
+  DEEZER: {
     clientID:
-      "fce83e782081bef0dc781dd252038d3873eb7710438a1e1ef69ccbed3ef27285",
-    secret: "8bcfab08409ad1d42eb6ba6d11b07a643a999669a76d529d513a481be6c6ddd3",
+      "437522",
+    secret: "370f784b6dc2d580d1b4e0a928999d4b",
   },
   JWT: {
     secret: "thesecretesourcetojwt",
