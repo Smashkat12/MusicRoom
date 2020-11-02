@@ -6,7 +6,7 @@ const controllerRoom = require("../controllers/room");
 /*
     Create Room
 */
-router.post("/room/create", controllerRoom.create);
+router.post("/room/create", controllerRoom.Create);
 /*
     All Rooms
 */

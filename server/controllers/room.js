@@ -15,47 +15,47 @@ exports.DeleteUser = (req, res) => {
     Room.findOne({
         _id: paramters.roomid
     })
-    .then( (roomResponse) => {
+        .then((roomResponse) => {
 
-        if (!roomResponse){
-            return res.status(404).send({ message: 'No room found' });
-        }
-
-        let counter = -1;
-        roomResponse.users.forEach((user, key) => {
-
-            if (paramters.userid.toString() == user.id) {
-              counter = key
+            if (!roomResponse) {
+                return res.status(404).send({ message: 'No room found' });
             }
 
-        });
+            let counter = -1;
+            roomResponse.users.forEach((user, key) => {
 
-        roomResponse.users.splice(counter, 1);
+                if (paramters.userid.toString() == user.id) {
+                    counter = key
+                }
 
-        Room.findOneAndUpdate({
-            _id: paramters.roomid
-        }, {
-            $set: {
-                users: roomResponse.users
-            }
-        }, {
-            new: true
-        }).then( (roomResponse_2) => {
-            roomResponse_2.songs = _.sortBy(roomResponse_2.songs, ['vote'], ['desc']);
-            return res.json({
-                message: 'User room', room
             });
-        }).catch( (error) => {
+
+            roomResponse.users.splice(counter, 1);
+
+            Room.findOneAndUpdate({
+                _id: paramters.roomid
+            }, {
+                $set: {
+                    users: roomResponse.users
+                }
+            }, {
+                new: true
+            }).then((roomResponse_2) => {
+                roomResponse_2.songs = _.sortBy(roomResponse_2.songs, ['vote'], ['desc']);
+                return res.json({
+                    message: 'User room', room
+                });
+            }).catch((error) => {
+                return res.status(500).send({
+                    message: "Server related error occured!"
+                });
+            });
+        })
+        .catch((error) => {
             return res.status(500).send({
                 message: "Server related error occured!"
             });
         });
-    })
-    .catch( (error) => {
-        return res.status(500).send({
-            message: "Server related error occured!"
-        });
-    });
 }
 /**
  * 
@@ -72,23 +72,23 @@ exports.AddToMusicList = (req, res) => {
 
     Room.findOne({
         _id: parameters["roomid"]
-    }).then( (roomResponse) => {
-        
-        if (!roomResponse){ 
+    }).then((roomResponse) => {
+
+        if (!roomResponse) {
             return res.status(404).send({
                 message: 'Room not found'
             });
         }
 
         const songs = roomResponse.songs;
-        
+
         songs.push({
             id: parameters["newid"],
             grade: songs.length - 1,
             name: parameters["track"],
             vote: 0
         });
-        
+
         Room.findOneAndUpdate({
             _id: parameters["roomid"]
         }, {
@@ -97,7 +97,7 @@ exports.AddToMusicList = (req, res) => {
             new: true
         }).then(roomResponse_2 => {
             roomResponse_2.songs = _.sortBy(roomResponse_2.songs, ['vote'], ['desc']);
-  
+
             return res.json({
                 message: 'Your room', roomResponse_2
             });
@@ -106,10 +106,8 @@ exports.AddToMusicList = (req, res) => {
                 message: "Server related error occured!"
             });
         });
-      })
-    }
+    })
 }
-
 /**
  * 
  * @param {*} req 
@@ -185,7 +183,7 @@ exports.PrivateRoomUpdate = (req, res) => {
                         });
                     } else {
                         users[index] = {
-                            id: userResponse..id,
+                            id: userResponse.id,
                             role: temp,
                             email: userResponse.email,
                             super: false
@@ -255,7 +253,7 @@ exports.PublicRoomUpdate = (req, res) => {
                 new: true
             })
                 .then((response) => {
-                    response.songs = _.sortBy(response.songs, , ['vote'], ['desc']);
+                    response.songs = _.sortBy(response.songs, ['vote'], ['desc']);
 
                     return res.json({ message: 'Your room', room })
                 })
@@ -356,7 +354,7 @@ exports.GetAllRooms = (req, res) => {
     };
 
     Room.find()
-        .then((response => {
+        .then((response) => {
             //Store All Rooms
             let AllRoms = [];
             response.forEach((eachRoom) => {
@@ -365,23 +363,23 @@ exports.GetAllRooms = (req, res) => {
                     if ((eachRoom.type === 'private' && eachRoom.location.active == 1
                         && (eachRoom.location.distance >= GetOtherUsersDistance(eachRoom.location.center.lat, eachRoom.location.center.long, parameters["lat"], parameters["long"]))) || eachRoom.type === 'public')
                         AllRoms.push(eachRoom);
-                    else {
-                        eachRoom.users.forEach((user) => {
-                            if (eachRoom.type == 'private' && user.id == parameters["userid"])
-                                AllRoms.push(eachRoom);
-                        });
-                    }
+                } else {
+                    eachRoom.users.forEach((user) => {
+                        if (eachRoom.type == 'private' && user.id == parameters["userid"])
+                            AllRoms.push(eachRoom);
+                    });
+                }
+
+                return res.json({
+                    message: 'Rooms you have created', rooms: eachRoom
                 });
-            return res.json({
-                message: 'Rooms you have created', rooms: eachRoom
             });
-        }))
+        })
         .catch((error) => {
             return res.status(500).send({
                 message: "Server related error occured!"
             });
         });
-
 }
 /**
  * 
@@ -400,7 +398,7 @@ exports.Create = (req, res) => {
         type: req.body.type,
         users: req.body.users,
         songs: req.body.songs
-    }
+    };
     //Check if is not null
     if (!parameters || !parameters["name"] || !parameters["description"]) {
         //return 404
@@ -409,7 +407,9 @@ exports.Create = (req, res) => {
         });
     }
     //Find Room
-    Room.findOne(name: parameters.["name"])
+    Room.findOne({
+        name: parameters["name"]
+    })
         .then((response) => {
             if (response)
                 return res.status(400).send({

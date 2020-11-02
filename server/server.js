@@ -18,6 +18,8 @@ const keys = require("./config/keys");
 
 const authRouter = require("./routes/authRouter");
 const userRouter = require("./routes/userRouter");
+const roomRouter = require("./routes/roomRouter");
+const playlistRouter = require("./routes/playlist");
 
 global.__basedir = __dirname;
 
@@ -85,6 +87,8 @@ app.use(contimeout("6000s"));
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs)); //create middleware to serve the api info and the UI for display at /api/docs
 app.use("/api/auth", authRouter.router);
 app.use("/api/user", userRouter.router);
+app.use(roomRouter);
+app.use(playlistRouter);
 
 
 /* ****************************************************END OF ROUTES **************************************************** */
