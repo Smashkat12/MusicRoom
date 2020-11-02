@@ -10,7 +10,7 @@
           </b-navbar-brand>
 
           <b-navbar-brand class="logo" v-if="is_logged_in">
-            <router-link to="/"
+            <router-link to="/landing"
                       ><span class="icon">MR</span>Music Room
             </router-link>
           </b-navbar-brand>
@@ -23,14 +23,13 @@
                 <b-nav-item><router-link to="/login">Login</router-link></b-nav-item>
             </b-navbar-nav>          
             <b-navbar-nav class="ml-auto" v-else>
-                <b-nav-item><router-link to="/landing">Music</router-link></b-nav-item>
+                <b-nav-item><router-link to="/landing">Explorer</router-link></b-nav-item>
                 <b-nav-item><router-link to="/search">Search Music</router-link></b-nav-item>
               <b-nav-item-dropdown style="background-color: #5e8465 !important" right>
                 <template #button-content>
                   <em>{{ username }}</em>
                 </template>
                 <b-dropdown-item style="background-color: #5e8465 !important"><router-link to="/profile">Profile</router-link></b-dropdown-item>
-                <b-dropdown-item style="background-color: #5e8465 !important"><router-link to="/changepassword">Change Password</router-link></b-dropdown-item>
                 <b-dropdown-item style="background-color: #5e8465 !important"><button class="btn sec" @click="logout">Log out</button></b-dropdown-item>
               </b-nav-item-dropdown>
             </b-navbar-nav>
@@ -92,14 +91,14 @@ export default {
 header {
   background-color: #5e8465 !important;
   width: 100%;
-  padding-bottom: 14px;
-  padding-top: 14px;
+  padding-bottom: 2px;
+  padding-top: 2px;
 }
 
 body {
   background: #f5f5f5;
-  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
+  font-size: 16px;
 }
 
 .container {
@@ -124,7 +123,7 @@ a {
 .router-link {
   color: white;
   text-decoration: none;
-  font-size: 20px;
+  font-size: 16px;
   position: relative;
   display: block;
   padding: 0.5rem 1rem;
@@ -147,7 +146,7 @@ em{
 .nav-item{
   color: white;
   text-decoration: none;
-  font-size: 20px;
+  font-size: 16px;
   position: relative;
   display: block;
   padding: 0.2rem 0.2rem;
@@ -161,7 +160,7 @@ em{
 }
 
 .router-link-exact-active {
-  font-size: 20px;
+  font-size: 16px;
   font-weight: bolder;
   display: block;
 }
@@ -182,9 +181,8 @@ nav {
   float: left;
   line-height: 60px;
   color: white;
-  font-size: 30px;
-  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+  font-size: 16px;
+  font-family: 'Open Sans Condensed', sans-serif;
 }
 
 .icon {
@@ -193,15 +191,13 @@ nav {
   padding-top: 5px;
   padding-bottom: 5px;
   margin: 10px;
-  font-size: 30px;
-  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+  font-size: 16px;
+  font-family: 'Open Sans Condensed', sans-serif;
   border: 3px solid #fff;
 }
 
 .menu ul li {
-  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+  font-family: 'Open Sans Condensed', sans-serif;
   padding: 0.5em;
   display: inline-block;
   color: #fff;
