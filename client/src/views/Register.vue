@@ -70,8 +70,9 @@
         <hr />
         <small
           >Register using
-          <a href="http://localhost:5000/api/auth/login/google">Google+</a>
-          <a href="http://localhost:5000/api/auth/login/Facebook">Facebook</a>
+          <a href="http://localhost:5000/api/auth/login/google">Google+</a> |
+          <a href="http://localhost:5000/api/auth/login/Facebook">Facebook</a> |
+          <a href="http://localhost:5000/api/auth/login/deezer">Deezer</a>
         </small>
         |
         <small
