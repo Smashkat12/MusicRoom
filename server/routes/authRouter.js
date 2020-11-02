@@ -114,12 +114,12 @@ exports.router = (() => {
 
   authRouter.get(
     "/login/deezer",
-    passport.authenticate("deezer", {scope: ['profile', 'email']})
+    passport.authenticate("deezer", {scope: ['basic_access', 'email' , 'offline_access', 'manage_library', 'manage_community', 'delete_library', 'listening_history']})
   );
 
   authRouter.get(
     "/link/deezer",
-    passport.authorize("deezer", {scope: ['profile', 'email']})
+    passport.authorize("deezer", {scope: ['basic_access', 'email' , 'offline_access', 'manage_library', 'manage_community', 'delete_library', 'listening_history']})
   );
 
   authRouter.get(
