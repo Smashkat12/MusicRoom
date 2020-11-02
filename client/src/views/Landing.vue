@@ -49,13 +49,6 @@
               </b-form-group>
             </form>
           </b-modal>
-          <a
-            href="http://localhost:5000/api/auth/link/deezer"
-            class="btn btn-info"
-          >
-            Link Deezer
-          </a>
-          <a href="/link/local" class="btn btn-danger"> Link Local </a>
         </b-col>
         <b-col sm="4" class="right">
           <b-button class="buttons right" v-b-modal.newPlaylist
@@ -115,33 +108,13 @@
           @click="hideModal"
           >Link Local</b-button
         >
-        <!-- <b-button class="mt-3" variant="outline-danger" block @click="hideModal"
-          >Close Me</b-button
-        > -->
-        <!-- <b-button
-          class="mt-2"
-          variant="outline-warning"
-          block
-          @click="toggleModal"
-          >Toggle Me</b-button
-        > -->
       </b-modal>
     </div>
-    <!-- <a href="http://localhost:5000/api/auth/link/google" class="btn btn-danger">
-      Link Google
-    </a> -->
-    <!-- <a
-      href="http://localhost:5000/api/auth/link/facebook"
-      class="btn btn-primary"
-    >
-      Link Facebook</a
-    > -->
 
     <app-footer></app-footer>
   </div>
 </template>
 <script>
-import axios from "axios";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import {axios_post} from "../functions/functions";
@@ -210,58 +183,6 @@ export default {
 
     hideModal() {
       this.$refs["my-modal"].hide();
-    },
-
-    async getUserData() {
-      let token = localStorage.getItem("jwt");
-      let options = {
-        method: "get",
-        headers: { Authorization: token },
-        url: "http://localhost:5000/api/auth",
-      };
-      let user = await axios(options).catch(() => {
-        console.log("Unable to process request");
-      });
-      if (user.googleToken) {
-        this.id = user.data.user._googleId;
-        this.username = user.data.user.username;
-        <a
-          href="http://localhost:5000/api/auth/link/google"
-          class="btn btn-danger"
-        >
-          link Google
-        </a>;
-      }
-      if (user.facebookToken) {
-        this.id = user.data.user._facebookId;
-        this.username = user.data.user.username;
-        <a
-          href="http://localhost:5000/api/auth/link/facebook"
-          class="btn btn-primary"
-        >
-          link Facebook
-        </a>;
-      }
-      if (user.deezerToken) {
-        this.id = user.data.user.deezerId;
-        this.username = user.data.user.username;
-        <a
-          href="http://localhost:5000/api/auth/link/deezer"
-          class="btn btn-info"
-        >
-          Link Deezer
-        </a>;
-      }
-
-      if (user.email) {
-        this.id = user.data.user._id;
-        this.username = user.data.user.username;
-        <a href="/link/local" class="btn btn-danger">
-          Link Local
-        </a>;
-      } else {
-        console.log("Not Authorised");
-      }
     },
   },
   mounted() {
