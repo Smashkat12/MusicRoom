@@ -34,3 +34,5 @@ router.post("/playlist/delete/user/:playListId/:userId/:userIdToDelete", control
     Import Playlist
 */
 router.post("/playlist/import/list/:userId", controllerPlaylist.ImportPlaylist);
+
+module.exports =  router;

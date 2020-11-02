@@ -21,6 +21,8 @@
             <b-navbar-nav class="ml-auto" v-if="!is_logged_in">
                 <b-nav-item><router-link to="/register">Register</router-link></b-nav-item>
                 <b-nav-item><router-link to="/login">Login</router-link></b-nav-item>
+                <b-nav-item @click="docs">Docs</b-nav-item>
+
             </b-navbar-nav>          
             <b-navbar-nav class="ml-auto" v-else>
                 <b-nav-item><router-link to="/landing">Explorer</router-link></b-nav-item>
@@ -58,6 +60,9 @@ export default {
       swal("success", "logged out", "success");
       this.$router.push("/login");
     },
+    docs() {
+            window.location.href = 'http://localhost:5000/api/docs';
+    },
     async getUserData() {
       let token = localStorage.getItem("jwt");
       let options = {
@@ -76,7 +81,6 @@ export default {
       }
     },
   },
-
   created() {
     this.getUserData();
     this.token = localStorage.getItem("jwt");
