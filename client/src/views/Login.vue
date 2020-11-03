@@ -33,8 +33,7 @@
       <small
         >login using
         <a href="http://localhost:5000/api/auth/login/google">Google+</a> |
-        <a href="http://localhost:5000/api/auth/login/facebook">Facebook</a> |
-        <a href="http://localhost:5000/api/auth/login/deezer">Deezer</a>
+        <a href="http://localhost:5000/api/auth/login/facebook">Facebook</a> 
       </small>
       |
       <small
