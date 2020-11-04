@@ -4,7 +4,7 @@ const nodemailer = require("nodemailer");
 const chalk = require("chalk");
 const bcrypt = require("bcryptjs");
 
-const { generateServerError } = require("../utils/utils");
+
 
 module.exports = {
   //gets all users

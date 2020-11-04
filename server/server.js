@@ -88,7 +88,7 @@ app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs)); //create mi
 app.use("/api/auth", authRouter.router);
 app.use("/api/user", userRouter.router);
 app.use(roomRouter);
-app.use(playlistRouter);
+app.use("/api/playlist", playlistRouter);
 
 
 /* ****************************************************END OF ROUTES **************************************************** */
