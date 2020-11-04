@@ -78,35 +78,11 @@
         </div>
         <b-button
           class="mt-3"
-          href="http://localhost:5000/api/auth/link/google"
-          variant="outline-success"
-          block
-          @click="hideModal"
-          >Link Google</b-button
-        >
-        <b-button
-          class="mt-3"
-          href="http://localhost:5000/api/auth/link/facebook"
-          variant="outline-success"
-          block
-          @click="hideModal"
-          >Link Facebook</b-button
-        >
-        <b-button
-          class="mt-3"
           href="http://localhost:5000/api/auth/link/deezer"
           variant="outline-success"
           block
           @click="hideModal"
           >Link Deezer</b-button
-        >
-        <b-button
-          class="mt-3"
-          href="http://localhost:8080/login"
-          variant="outline-success"
-          block
-          @click="hideModal"
-          >Link Local</b-button
         >
       </b-modal>
     </div>
@@ -119,7 +95,7 @@ import Footer from "../components/Footer";
 import Header from "../components/Header";
 import {axios_post} from "../functions/functions";
 import sweet from "sweetalert";
-
+import axios from "axios";
 
 export default {
   name: "Landing",
@@ -133,7 +109,8 @@ export default {
       description: "",
       nameState: null,
       selected: "",
-      errors: []
+      errors: [],
+      deezerId:null
     };
   },
   methods: {
@@ -151,7 +128,29 @@ export default {
         sweet("", "Created Playlist", "success");
       }
     },
-    checkFormValidity() {
+    async getUserData() {
+      let token = localStorage.getItem("jwt");
+      let options = {
+        method: "get",
+        headers: { Authorization: token },
+        url: "http://localhost:5000/api/auth"
+      };
+      let user = await axios(options).catch(() => {
+        console.log("Unable to process request");
+      });
+      if(user.data.auth == true)
+      {
+        if(user.data.user._deezerId){
+            console.log(user.data.user._deezerId);
+            this.hideModal();
+        }else{
+          this.showModal();
+        }
+      }else{
+        console.log("Not Authorised")
+      }
+    },
+        checkFormValidity() {
       const valid = this.$refs.form.checkValidity();
       this.nameState = valid;
       return valid;
@@ -186,7 +185,7 @@ export default {
     },
   },
   mounted() {
-    this.showModal();
+    this.getUserData();
   },
 };
 </script>
