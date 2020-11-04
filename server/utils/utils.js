@@ -39,6 +39,10 @@ export const registerValidation = [
     .withMessage("password cannot be less than 4 characters"),
 ];
 
+export const playlistTitleValidation = [
+	check("title").exists().withMessage("Playlist tiltle cannot be empty")
+];
+
 
 export const loginValidation = [
   check("username")
