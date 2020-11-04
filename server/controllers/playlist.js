@@ -436,44 +436,17 @@ exports.GetUserPlaylistWithName = (req, res) => {
  * @param {*} res
  */
 exports.GetAllUserPlaylists = (req, res) => {
-  const parameters = {
-    userid: req.params.userId,
-  };
+  const url = `https://api.deezer.com/user/me/playlists?access_token=${req.user.deezerToken}`;
 
-  Playlist.find()
-    .then((playLists, response) => {
-      const playlistArray = [];
-
-      response.forEach((list) => {
-        list.users.forEach((listResponse) => {
-          if (
-            listResponse.id == parameters["userid"] &&
-            list.type == "private"
-          ) {
-            playlistArray.push(list);
-          }
-        });
-      });
-
-      response.forEach((list) => {
-        if (list.type === "public") {
-          playlistArray.push(list);
-        }
-      });
-
-      response.forEach((list) => {
-        list.songs = _.sortBy(list.songs, ["grade"]);
-      });
-
-      return res.json({
-        message: "Your playLists",
-        playLists: playlistArray,
-      });
+  axios
+    .get(url)
+    .then((result) => {
+      /* res.json({ success: true, playList: result.data }); */
+      console.log(result.data);
+      res.status(200).send({success: true, playLists: result.data.data})
     })
-    .catch((error) => {
-      return res.status(500).send({
-        message: "Server related error occured!",
-      });
+    .catch((err) => {
+      res.json({ success: false, err });
     });
 };
 /**
@@ -495,8 +468,9 @@ exports.CreatePlaylist = (req, res) => {
   const url = `https://api.deezer.com/user/${req.user._deezerId}/playlists?title=${req.body.title}&access_token=${req.user.deezerToken}`;
 
   axios.post(url).then((result) =>{
-	  console.log(result.data);
-	  return res.send(result);
+	  res.json({ success: true, playListId: result.data });
+  }).catch((err) => {
+	  res.json({ success: false, err});
   })
  
   
