@@ -2,6 +2,7 @@ const Playlist = require("../models/playlist");
 const User = require("../models/user");
 const { validationResult } = require("express-validator");
 const axios = require("axios");
+const { generateServerError } = require("../utils/utils");
 
 /**
  *
@@ -443,10 +444,13 @@ exports.GetAllUserPlaylists = (req, res) => {
     .then((result) => {
       /* res.json({ success: true, playList: result.data }); */
       console.log(result.data);
-      res.status(200).send({success: true, playLists: result.data.data})
+      res.status(200).send({ success: true, playLists: result.data.data });
     })
     .catch((err) => {
-      res.json({ success: false, err });
+      const resStatusCode = 500;
+      const fullError = { success: false, errors: err.array() };
+      const message = "Something went wrong in server";
+      return generateServerError(res, resStatusCode, fullError, message);
     });
 };
 /**
@@ -462,16 +466,22 @@ exports.CreatePlaylist = (req, res) => {
   }
 
   //api call to deezer
-  /* const userId = "555605401";
-  const accessToken = "frGBBx2Ae5OTAJuuSwUaq7t1LRCz9nR4WFrdZOfWb5F0lFg30h"; */
+  const deezerId = "555605401";
+  const deezerToken = "frGBBx2Ae5OTAJuuSwUaq7t1LRCz9nR4WFrdZOfWb5F0lFg30h";
 
-  const url = `https://api.deezer.com/user/${req.user._deezerId}/playlists?title=${req.body.title}&access_token=${req.user.deezerToken}`;
+  const url = `https://api.deezer.com/user/${deezerId}/playlists?title=${req.body.title}&access_token=${deezerToken}`;
 
-  axios.post(url).then((result) =>{
-	  res.json({ success: true, playListId: result.data });
-  }).catch((err) => {
-	  res.json({ success: false, err});
-  })
- 
-  
+  /*   const url = `https://api.deezer.com/user/${req.user._deezerId}/playlists?title=${req.body.title}&access_token=${req.user.deezerToken}`;
+   */
+  axios
+    .post(url)
+    .then((result) => {
+      res.json({ success: true, playListId: result.data });
+    })
+    .catch((err) => {
+      const resStatusCode = 500;
+      const fullError = { success: false, errors: err.array() };
+      const message = "Something went wrong in server";
+      return generateServerError(res, resStatusCode, fullError, message);
+    });
 };
