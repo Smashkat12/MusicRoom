@@ -17,34 +17,17 @@
             <form ref="form" @submit.stop.prevent="handleSubmit">
               <b-form-group
                 :state="nameState"
-                label="Playlist Name"
+                label="Playlist Title"
                 label-for="name-input"
                 invalid-feedback="Name is required"
               >
                 <b-form-input
                   id="name-input"
-                  v-model="name"
+                  v-model="title"
                   :state="nameState"
                   required
                 >
                 </b-form-input>
-                <br />
-                Description
-                <b-form-textarea
-                  id="textarea"
-                  v-model="description"
-                  placeholder="Description"
-                  rows="3"
-                  max-rows="6"
-                />
-                <br />
-                Visibility
-                <b-form-radio v-model="selected" name="type" value="Public"
-                  >Public</b-form-radio
-                >
-                <b-form-radio v-model="selected" name="type" value="Private"
-                  >Private</b-form-radio
-                >
                 <br />
               </b-form-group>
             </form>
@@ -56,17 +39,19 @@
           >
         </b-col>
       </b-row>
-      <br/>
+      <br />
       <b-row>
         <b-col sm="12">
-            <div>
-              <b-tabs content-class="mt-3" justified>
-                <b-tab title="Charts" active><h3>Charts</h3></b-tab>
-                <b-tab title="Playlists"><h3>Playlists</h3></b-tab>
-                <b-tab title="Listening History"><h3>Listening History</h3></b-tab>
-                <b-tab title="Delegations"><h3>Delegations</h3></b-tab>
-              </b-tabs>
-            </div>
+          <div>
+            <b-tabs content-class="mt-3" justified>
+              <b-tab title="Charts" active><h3>Charts</h3> </b-tab>
+              <b-tab title="Playlists"><h3>Playlists</h3></b-tab>
+              <b-tab title="Listening History"
+                ><h3>Listening History</h3></b-tab
+              >
+              <b-tab title="Delegations"><h3>Delegations</h3></b-tab>
+            </b-tabs>
+          </div>
         </b-col>
       </b-row>
     </b-container>
@@ -93,7 +78,7 @@
 <script>
 import Footer from "../components/Footer";
 import Header from "../components/Header";
-import {axios_post} from "../functions/functions";
+import { axios_post } from "../functions/functions";
 import sweet from "sweetalert";
 import axios from "axios";
 
@@ -105,27 +90,29 @@ export default {
   },
   data() {
     return {
-      name: "",
-      description: "",
+      title: "",
       nameState: null,
       selected: "",
       errors: [],
-      deezerId:null
+      success: [],
+      deezerId: "",
+      deezerToken: "",
     };
   },
   methods: {
-    createPlaylist: async function (){
+    createPlaylist: async function () {
       this.error = [];
       const data = {
-        name: escape(this.name),
-        description: escape(this.description),
-        selected: escape(this.selected),
+        title: escape(this.title),
+        deezerId: escape(this.deezerId),
+        deezerToken: escape(this.deezerToken),
       };
-      var results = await axios_post("/api/room/create", data);
+      var results = await axios_post("/api/playlist/create", data);
       if (results == "Oops!") {
-        this.errors.push("Error");
+        sweet("", results.data.err, "error");
       } else {
-        sweet("", "Created Playlist", "success");
+        console.log(results.data.success);
+        sweet("", "Created " + this.title + " Playlist", "success");
       }
     },
     async getUserData() {
@@ -133,24 +120,24 @@ export default {
       let options = {
         method: "get",
         headers: { Authorization: token },
-        url: "http://localhost:5000/api/auth"
+        url: "http://localhost:5000/api/auth",
       };
       let user = await axios(options).catch(() => {
         console.log("Unable to process request");
       });
-      if(user.data.auth == true)
-      {
-        if(user.data.user._deezerId){
-            console.log(user.data.user._deezerId);
-            this.hideModal();
-        }else{
+      if (user.data.auth == true) {
+        if (user.data.user._deezerId) {
+          this.deezerId = user.data.user._deezerId;
+          this.deezerToken = user.data.user.deezerToken;
+          this.hideModal();
+        } else {
           this.showModal();
         }
-      }else{
-        console.log("Not Authorised")
+      } else {
+        console.log("Not Authorised");
       }
     },
-        checkFormValidity() {
+    checkFormValidity() {
       const valid = this.$refs.form.checkValidity();
       this.nameState = valid;
       return valid;
@@ -162,7 +149,7 @@ export default {
       this.handleSubmit();
     },
     resetModal() {
-      (this.name = ""), (this.nameState = null), (this.description = "");
+      (this.title = ""), (this.nameState = null);
     },
     handleSubmit() {
       // Exit when the form isn't valid
@@ -184,8 +171,9 @@ export default {
       this.$refs["my-modal"].hide();
     },
   },
-  mounted() {
+  updated() {
     this.getUserData();
+    //this.getAllUserPlaylists();
   },
 };
 </script>
