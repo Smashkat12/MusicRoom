@@ -29,6 +29,9 @@
                 >
                 </b-form-input>
                 <br />
+                <label for="type">Visibility</label>
+                <b-form-radio v-model="type" name="visibility" value="Public">Public</b-form-radio>
+                <b-form-radio v-model="type" name="visibility" value="Private">Private</b-form-radio>
               </b-form-group>
             </form>
           </b-modal>
@@ -146,7 +149,8 @@ export default {
       errors: [],
       success: [],
       deezerId:"",
-      deezerToken:""
+      deezerToken:"",
+      type:""
     };
   },
   methods: {
@@ -154,6 +158,7 @@ export default {
       this.error = [];
       const data = {
         title: escape(this.title),
+        type: escape(this.type),
         deezerId: escape(this.deezerId),
         deezerToken: escape(this.deezerToken),
 
