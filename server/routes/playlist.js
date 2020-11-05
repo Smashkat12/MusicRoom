@@ -23,6 +23,22 @@ router.get(
   controllerPlaylist.GetAllUserPlaylists
 );
 /*
+    Add Tracks
+*/
+router.post(
+  "/:PId/tracks",
+  passport.authenticate("jwt", { session: false }),
+  controllerPlaylist.addPlaylistTracks
+);
+/*
+    Get All Playlist Tracks
+*/
+router.get(
+  "/:PId/tracks",
+  passport.authenticate("jwt", { session: false }),
+  controllerPlaylist.getPlaylistTracks
+);
+/*
     Get User Playlist with name
 */
 router.get("/:name/:userId", controllerPlaylist.GetUserPlaylistWithName);
