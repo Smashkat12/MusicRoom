@@ -39,18 +39,19 @@
           >
         </b-col>
       </b-row>
-      <br/>
+      <br />
       <b-row>
         <b-col sm="12">
-            <div>
-              <b-tabs content-class="mt-3" justified>
-                <b-tab title="Charts" active><h3>Charts</h3>
-                </b-tab>
-                <b-tab title="Playlists"><h3>Playlists</h3></b-tab>
-                <b-tab title="Listening History"><h3>Listening History</h3></b-tab>
-                <b-tab title="Delegations"><h3>Delegations</h3></b-tab>
-              </b-tabs>
-            </div>
+          <div>
+            <b-tabs content-class="mt-3" justified>
+              <b-tab title="Charts" active><h3>Charts</h3> </b-tab>
+              <b-tab title="Playlists"><h3>Playlists</h3></b-tab>
+              <b-tab title="Listening History"
+                ><h3>Listening History</h3></b-tab
+              >
+              <b-tab title="Delegations"><h3>Delegations</h3></b-tab>
+            </b-tabs>
+          </div>
         </b-col>
       </b-row>
     </b-container>
@@ -62,35 +63,11 @@
         </div>
         <b-button
           class="mt-3"
-          href="http://localhost:5000/api/auth/link/google"
-          variant="outline-success"
-          block
-          @click="hideModal"
-          >Link Google</b-button
-        >
-        <b-button
-          class="mt-3"
-          href="http://localhost:5000/api/auth/link/facebook"
-          variant="outline-success"
-          block
-          @click="hideModal"
-          >Link Facebook</b-button
-        >
-        <b-button
-          class="mt-3"
           href="http://localhost:5000/api/auth/link/deezer"
           variant="outline-success"
           block
           @click="hideModal"
           >Link Deezer</b-button
-        >
-        <b-button
-          class="mt-3"
-          href="http://localhost:8080/login"
-          variant="outline-success"
-          block
-          @click="hideModal"
-          >Link Local</b-button
         >
       </b-modal>
     </div>
@@ -101,10 +78,9 @@
 <script>
 import Footer from "../components/Footer";
 import Header from "../components/Header";
-import {axios_post} from "../functions/functions";
+import { axios_post } from "../functions/functions";
 import sweet from "sweetalert";
 import axios from "axios";
-
 
 export default {
   name: "Landing",
@@ -119,18 +95,17 @@ export default {
       selected: "",
       errors: [],
       success: [],
-      deezerId:"",
-      deezerToken:""
+      deezerId: "",
+      deezerToken: "",
     };
   },
   methods: {
-    createPlaylist: async function (){
+    createPlaylist: async function () {
       this.error = [];
       const data = {
         title: escape(this.title),
         deezerId: escape(this.deezerId),
         deezerToken: escape(this.deezerToken),
-
       };
       var results = await axios_post("/api/playlist/create", data);
       if (results == "Oops!") {
@@ -145,22 +120,21 @@ export default {
       let options = {
         method: "get",
         headers: { Authorization: token },
-        url: "http://localhost:5000/api/auth"
+        url: "http://localhost:5000/api/auth",
       };
       let user = await axios(options).catch(() => {
         console.log("Unable to process request");
       });
-      if(user.data.auth == true)
-      {
-        if(user.data.user._deezerId){
-            this.deezerId = user.data.user._deezerId
-            this.deezerToken = user.data.user.deezerToken;
-            this.hideModal();
-        }else{
+      if (user.data.auth == true) {
+        if (user.data.user._deezerId) {
+          this.deezerId = user.data.user._deezerId;
+          this.deezerToken = user.data.user.deezerToken;
+          this.hideModal();
+        } else {
           this.showModal();
         }
-      }else{
-        console.log("Not Authorised")
+      } else {
+        console.log("Not Authorised");
       }
     },
     checkFormValidity() {
@@ -197,10 +171,10 @@ export default {
       this.$refs["my-modal"].hide();
     },
   },
-  updated(){
+  updated() {
     this.getUserData();
     //this.getAllUserPlaylists();
-  }
+  },
 };
 </script>
 <style scoped>
