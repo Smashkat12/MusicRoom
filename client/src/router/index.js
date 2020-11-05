@@ -9,7 +9,7 @@ import ResetPassword from '../views/ResetPassword.vue'
 import SearchMusic from '../views/SearchMusic.vue'
 import Landing from '../views/Landing.vue'
 import ConfirmEmail from '../views/ConfirmEmail.vue'
-import LinksProfile from '../views/LinksProfile'
+import LinksProfile from '../views/LinksProfile.vue'
 
 export default [
     {   

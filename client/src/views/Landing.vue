@@ -17,34 +17,17 @@
             <form ref="form" @submit.stop.prevent="handleSubmit">
               <b-form-group
                 :state="nameState"
-                label="Playlist Name"
+                label="Playlist Title"
                 label-for="name-input"
                 invalid-feedback="Name is required"
               >
                 <b-form-input
                   id="name-input"
-                  v-model="name"
+                  v-model="title"
                   :state="nameState"
                   required
                 >
                 </b-form-input>
-                <br />
-                Description
-                <b-form-textarea
-                  id="textarea"
-                  v-model="description"
-                  placeholder="Description"
-                  rows="3"
-                  max-rows="6"
-                />
-                <br />
-                Visibility
-                <b-form-radio v-model="selected" name="type" value="Public"
-                  >Public</b-form-radio
-                >
-                <b-form-radio v-model="selected" name="type" value="Private"
-                  >Private</b-form-radio
-                >
                 <br />
               </b-form-group>
             </form>
@@ -60,9 +43,34 @@
       <b-row>
         <b-col sm="12">
             <div>
-              <b-tabs content-class="mt-3" justified>
-                <b-tab title="Charts" active><h3>Charts</h3></b-tab>
-                <b-tab title="Playlists"><h3>Playlists</h3></b-tab>
+              <b-tabs content-class="mt-4" fill>
+                <b-tab title="Playlists" active><h3>Playlists</h3>
+                <div class="card-deck" >
+                  <div class="row"  v-if="found_playlists">
+                    <div v-for="(list, index) in found_playlists" v-bind:key="index" @click="send_info(list)">
+                      <router-link v-bind:to="'/info/' + list.title">
+                        <div class="col-4">
+                            <div class="card" border-light style="width: 18rem;">
+                              <img class="card-img-top" :src="list.picture_medium" alt />
+                              <div class="card-body">
+                                <h2>{{ list.title }}</h2>
+                                <h4>Created By {{ list.creator.name }}</h4>
+                                <br />
+                                <br />
+                              </div>
+                          </div>
+                        </div>
+                      </router-link>
+                    </div>
+                  </div>
+                  
+                  <br/><br/>
+                </div>
+              
+                </b-tab>
+                <b-tab title="Charts"><h3>Charts</h3>
+                
+                </b-tab>
                 <b-tab title="Listening History"><h3>Listening History</h3></b-tab>
                 <b-tab title="Delegations"><h3>Delegations</h3></b-tab>
               </b-tabs>
@@ -76,7 +84,7 @@
         <div class="d-block text-center">
           <h3>Link your account</h3>
         </div>
-        <b-button
+        <!--<b-button
           class="mt-3"
           href="http://localhost:5000/api/auth/link/google"
           variant="outline-success"
@@ -92,14 +100,7 @@
           @click="hideModal"
           >Link Facebook</b-button
         >
-        <b-button
-          class="mt-3"
-          href="http://localhost:5000/api/auth/link/deezer"
-          variant="outline-success"
-          block
-          @click="hideModal"
-          >Link Deezer</b-button
-        >
+        
         <b-button
           class="mt-3"
           href="http://localhost:8080/login"
@@ -107,6 +108,14 @@
           block
           @click="hideModal"
           >Link Local</b-button
+        >-->
+        <b-button
+          class="mt-3"
+          href="http://localhost:5000/api/auth/link/deezer"
+          variant="outline-success"
+          block
+          @click="hideModal"
+          >Link Deezer</b-button
         >
       </b-modal>
     </div>
@@ -119,6 +128,7 @@ import Footer from "../components/Footer";
 import Header from "../components/Header";
 import {axios_post} from "../functions/functions";
 import sweet from "sweetalert";
+import axios from "axios";
 
 
 export default {
@@ -129,26 +139,63 @@ export default {
   },
   data() {
     return {
-      name: "",
-      description: "",
+      title: "",
+      found_playlists: [],
       nameState: null,
       selected: "",
-      errors: []
+      errors: [],
+      success: [],
+      deezerId:"",
+      deezerToken:""
     };
   },
   methods: {
     createPlaylist: async function (){
       this.error = [];
       const data = {
-        name: escape(this.name),
-        description: escape(this.description),
-        selected: escape(this.selected),
+        title: escape(this.title),
+        deezerId: escape(this.deezerId),
+        deezerToken: escape(this.deezerToken),
+
       };
-      var results = await axios_post("/api/room/create", data);
+      var results = await axios_post("/api/playlist/create", data);
       if (results == "Oops!") {
-        this.errors.push("Error");
+        sweet("", results.data.err, "error");
       } else {
-        sweet("", "Created Playlist", "success");
+        console.log(results.data.success);
+        sweet("", "Created " + this.title + " Playlist", "success");
+      }
+    },
+    async getAllUserPlaylists() {
+      try {
+        const res = await axios.get('http://localhost:5000/api/playlist/me/all');
+        this.found_playlists = res.data.playLists;
+        this.no_of_playlist = res.data.playLists.length;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async getUserData() {
+      let token = localStorage.getItem("jwt");
+      let options = {
+        method: "get",
+        headers: { Authorization: token },
+        url: "http://localhost:5000/api/auth"
+      };
+      let user = await axios(options).catch(() => {
+        console.log("Unable to process request");
+      });
+      if(user.data.auth == true)
+      {
+        if(user.data.user._deezerId){
+            this.deezerId = user.data.user._deezerId
+            this.deezerToken = user.data.user.deezerToken;
+            this.hideModal();
+        }else{
+          this.showModal();
+        }
+      }else{
+        console.log("Not Authorised")
       }
     },
     checkFormValidity() {
@@ -163,7 +210,7 @@ export default {
       this.handleSubmit();
     },
     resetModal() {
-      (this.name = ""), (this.nameState = null), (this.description = "");
+      (this.title = ""), (this.nameState = null);
     },
     handleSubmit() {
       // Exit when the form isn't valid
@@ -185,8 +232,13 @@ export default {
       this.$refs["my-modal"].hide();
     },
   },
-  mounted() {
-    this.showModal();
+  updated(){
+    this.getUserData();
+    //this.getAllUserPlaylists();
+  },
+  created(){
+    this.getUserData();
+    this.getAllUserPlaylists();
   },
 };
 </script>
@@ -196,5 +248,41 @@ export default {
 }
 .right {
   text-align: right;
+}
+
+.center {
+  text-align: center;
+}
+.card-deck {
+    margin: auto 0;
+    text-align: left;
+    margin-left: 16px;
+}
+.card {
+  /* border: solid; */
+  background-color:#b5afbc ;
+  margin-top: 20px;
+}
+
+.sort-buttons {
+  margin: 5px;
+}
+
+.card-img-top {
+  height: 250px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+
+}
+.card-body {
+  height: 200px;
+  background: white;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  text-align: center;
+}
+.card-border{
+  border:yellow;
+}
+.layout {
+   text-align: left;
 }
 </style>

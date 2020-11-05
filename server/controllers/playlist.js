@@ -131,9 +131,6 @@ exports.DeleteUserFromPlaylist = (req, res) => {
 exports.AddMusicToPlaylist = (req, res) => {
   const parameters = {
     PId: req.params.playListId,
-    userid: req.params.userId,
-    songid: req.params.newId,
-    songname: req.params.songName,
   };
 
   Playlist.findOne({
@@ -141,7 +138,7 @@ exports.AddMusicToPlaylist = (req, res) => {
   }).then((response) => {
     if (!response) {
       return res.status(404).send({
-        message: "Playlist does exist",
+        message: "Playlist does'nt exist",
       });
     }
 
@@ -485,3 +482,47 @@ exports.CreatePlaylist = (req, res) => {
       return generateServerError(res, resStatusCode, fullError, message);
     });
 };
+
+/**
+ *
+ * @param {*} req
+ * @param {*} res
+ * Add tracks to Playlist
+ */
+exports.addPlaylistTracks = (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    const url = `https://api.deezer.com/playlist/${req.user.PId}/tracks?&access_token=${req.user.deezerToken}`;
+  
+    axios.post(url).then((result) =>{
+        res.json({ success: true, playListId: result.data });
+    }).catch((err) => {
+        res.json({ success: false, err});
+    })
+   
+    
+  };
+
+  /**
+ *
+ * @param {*} req
+ * @param {*} res
+ * get tracks from Playlist
+ */
+exports.getPlaylistTracks = (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    const url = `https://api.deezer.com/playlist/${req.user.PId}/tracks?&access_token=${req.user.deezerToken}`;
+  
+    axios.get(url).then((result) =>{
+        res.json({ success: true, playListId: result.data });
+    }).catch((err) => {
+        res.json({ success: false, err});
+    })
+   
+    
+  };
