@@ -89,6 +89,7 @@ import { axios_put,
          validName,
          validEmail } from "../functions/functions";
 import axios from "axios";
+import sweet from "sweetalert";
 export default {
   components: {
     "app-header": Header,
@@ -146,8 +147,7 @@ export default {
           this.errors = results.data.message;
           console.log(this.errors);
         } else if (results.data.success) {
-          console.log(results.data.updated._id);
-          this.success.push("Profile Updated");
+             sweet("", "Profile Updated", "success");
         }
       } else {
         this.errors.push("An unexpected error happened");
