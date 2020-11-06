@@ -47,7 +47,9 @@ module.exports = function (passport) {
               const resStatusCode = 400;
               const fullError = { success: false, errors: errors.array() };
               const message = "Input validation error";
-              return done(generateServerError(resStatusCode, fullError, message));
+              return done(
+                generateServerError(resStatusCode, fullError, message)
+              );
             }
             //check if username provided is unique
             User.findOne({ username }, (err, existingUser) => {
@@ -111,8 +113,7 @@ module.exports = function (passport) {
                 return done(err);
               }
               return done(null, user);
-            }
-            )
+            });
           }
         });
       }
@@ -165,31 +166,44 @@ module.exports = function (passport) {
         process.nextTick(function () {
           //user is not logged in yet
           if (!req.user) {
-            User.findOne({ _facebookId: profile.id }, function (err, user) {
-              if (err) return done(err);
-              if (user) {
-                if (!user.facebookToken) {
-                  user.facebookToken = accessToken;
-                  user.save(function (err) {
-                    if (err) return done(err);
+            User.findOne(
+              {
+                $or: [
+                  { _facebookId: profile.id },
+                  { email: profile.emails[0].value },
+                  {
+                    username: `${profile.name.givenName}${profile.name.familyName}`,
+                  },
+                ],
+              },
+              function (err, user) {
+                if (err) return done(err);
+                if (user) {
+                  if (!user.facebookToken) {
+                    user._facebookId = profile.id;
+                    user.facebookToken = accessToken;
+                    user.save(function (err) {
+                      if (err) return done(err);
+                    });
+                  }
+                  return done(null, user);
+                } else {
+                  console.log("about to create a new user");
+                  var newUser = new User();
+                  newUser._facebookId = profile.id;
+                  newUser.facebookToken = accessToken;
+                  newUser.firstname = profile.name.givenName;
+                  newUser.lastname = profile.name.familyName;
+                  newUser.username = `${profile.name.givenName}${profile.name.familyName}`;
+                  newUser.email = profile.emails[0].value;
+                  newUser.confirmKey = "confirmed";
+                  newUser.save(function (err) {
+                    if (err) throw err;
+                    return done(null, newUser);
                   });
                 }
-                return done(null, user);
-              } else {
-                var newUser = new User();
-                newUser._facebookId = profile.id;
-                newUser.facebookToken = accessToken;
-                newUser.firstname = profile.name.givenName;
-                newUser.lastname = profile.name.familyName;
-                newUser.username = `${profile.name.givenName}${profile.name.familyName}`;
-                newUser.email = profile.emails[0].value;
-                newUser.confirmKey = "confirmed";
-                newUser.save(function (err) {
-                  if (err) throw err;
-                  return done(null, newUser);
-                });
               }
-            });
+            );
           } else {
             var user = req.user;
             user._facebookId = profile.id;
@@ -217,36 +231,47 @@ module.exports = function (passport) {
       function (req, accessToken, refreshToken, profile, done) {
         process.nextTick(function () {
           if (!req.user) {
-            User.findOne({ _googleId: profile.id }, function (err, user) {
-              if (err) return done(err);
-              if (user) {
-                if (!user.googleToken) {
-                  user.googleToken = accessToken;
-                  user.save(function (err) {
-                    if (err) return done(err);
+            User.findOne(
+              {
+                $or: [
+                  { _googleId: profile.id },
+                  { email: profile.emails[0].value },
+                  {
+                    username: `${profile.name.givenName}${profile.name.familyName}`,
+                  },
+                ],
+              },
+              function (err, user) {
+                if (err) return done(err);
+                if (user) {
+                  if (!user.googleToken) {
+                    user._googleId = profile.id;
+                    user.googleToken = accessToken;
+                    user.save(function (err) {
+                      if (err) return done(err);
+                    });
+                  }
+                  return done(null, user);
+                } else {
+                  //include check for email in db
+                  var newUser = new User();
+                  newUser._googleId = profile.id;
+                  newUser.googleToken = accessToken;
+                  newUser.firstname = profile.name.givenName;
+                  newUser.lastname = profile.name.familyName;
+                  newUser.username = !profile.username
+                    ? profile.displayName
+                    : profile.username;
+                  newUser.email = profile.emails[0].value;
+                  newUser.confirmKey = "confirmed";
+
+                  newUser.save(function (err) {
+                    if (err) throw err;
+                    return done(null, newUser);
                   });
                 }
-                return done(null, user);
-              } else {
-
-                //include check for email in db
-                var newUser = new User();
-                newUser._googleId = profile.id;
-                newUser.googleToken = accessToken;
-                newUser.firstname = profile.name.givenName;
-                newUser.lastname = profile.name.familyName;
-                newUser.username = !profile.username
-                  ? profile.displayName
-                  : profile.username;
-                newUser.email = profile.emails[0].value;
-                newUser.confirmKey = "confirmed";
-
-                newUser.save(function (err) {
-                  if (err) throw err;
-                  return done(null, newUser);
-                });
               }
-            });
+            );
           } else {
             var user = req.user;
             user._googleId = profile.id;
@@ -274,33 +299,44 @@ module.exports = function (passport) {
       function (req, accessToken, refreshToken, profile, done) {
         process.nextTick(function () {
           if (!req.user) {
-            User.findOne({ _deezerId: profile.id }, function (err, user) {
-              if (err) return done(err);
-              if (user) {
-                if (!user.deezerToken) {
-                  user.deezerToken = accessToken;
-                  user.save(function (err) {
-                    if (err) return done(err);
+            User.findOne(
+              {
+                $or: [
+                  { _deezerId: profile.id },
+                  { email: profile.emails[0].value },
+                  {
+                    username: `${profile.name.givenName}${profile.name.familyName}`,
+                  },
+                ],
+              },
+              function (err, user) {
+                if (err) return done(err);
+                if (user) {
+                  if (!user.deezerToken) {
+                    user._deezerId = profile.id;
+                    user.deezerToken = accessToken;
+                    user.save(function (err) {
+                      if (err) return done(err);
+                    });
+                  }
+                  return done(null, user);
+                } else {
+                  var newUser = new User();
+                  newUser._deezerId = profile.id;
+                  newUser.deezerToken = accessToken;
+                  newUser.firstname = profile.name.givenName;
+                  newUser.lastname = profile.name.familyName;
+                  newUser.username = `${profile.name.givenName}${profile.name.familyName}`;
+                  newUser.email = profile.emails[0].value;
+                  newUser.confirmKey = "confirmed";
+
+                  newUser.save(function (err) {
+                    if (err) throw err;
+                    return done(null, newUser);
                   });
                 }
-                return done(null, user);
-              } else {
-
-                var newUser = new User();
-                newUser._deezerId = profile.id;
-                newUser.deezerToken = accessToken;
-                newUser.firstname = profile.name.givenName;
-                newUser.lastname = profile.name.familyName;
-                newUser.username = `${profile.name.givenName}${profile.name.familyName}`;
-                newUser.email = profile.emails[0].value;
-                newUser.confirmKey = "confirmed";
-
-                newUser.save(function (err) {
-                  if (err) throw err;
-                  return done(null, newUser);
-                });
               }
-            });
+            );
           } else {
             var user = req.user;
             user._deezerId = profile.id;
@@ -315,7 +351,6 @@ module.exports = function (passport) {
       }
     )
   );
-
 
   /* set session cookie */
   passport.serializeUser((user, done) => {

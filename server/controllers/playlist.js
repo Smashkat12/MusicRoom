@@ -158,6 +158,8 @@ exports.AddMusicToPlaylist = (req, res) => {
 
     const songs = response.songs;
 
+	//add request to deezer to add track
+	
     songs.push({
       id: parameters["songid"],
       grade: songs.length - 1,
