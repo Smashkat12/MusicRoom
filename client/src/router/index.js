@@ -10,6 +10,7 @@ import SearchMusic from '../views/SearchMusic.vue'
 import Landing from '../views/Landing.vue'
 import ConfirmEmail from '../views/ConfirmEmail.vue'
 import LinksProfile from '../views/LinksProfile.vue'
+import Playlist from '../views/Playlist.vue'
 
 export default [
     {   
@@ -69,6 +70,12 @@ export default [
         path: '/confirm/:key', 
         name: 'ConfirmEmail',
         component: ConfirmEmail
+    },
+    {
+        path: '/playlist/:id',
+        name: 'Playlist',
+        component: Playlist,
+        meta: {requiresAuth: true}
     }
 ]
 

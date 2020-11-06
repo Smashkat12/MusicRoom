@@ -51,7 +51,7 @@
                 <div class="card-deck" >
                   <div class="row"  v-if="found_playlists">
                     <div v-for="(list, index) in found_playlists" v-bind:key="index" @click="send_info(list)">
-                      <router-link v-bind:to="'/info/' + list.title">
+                      <router-link v-bind:to="'/playlist/' + list.id">
                         <div class="col-4">
                             <div class="card" border-light style="width: 18rem;">
                               <img class="card-img-top" :src="list.picture_medium" alt />
@@ -132,6 +132,7 @@ import Header from "../components/Header";
 import {axios_post} from "../functions/functions";
 import sweet from "sweetalert";
 import axios from "axios";
+import EventBus from "../event_bus/event_bus";
 
 
 export default {
@@ -154,6 +155,9 @@ export default {
     };
   },
   methods: {
+    send_info(title) {
+      EventBus.$emit("playlist_details", title);
+    },
     createPlaylist: async function (){
       this.error = [];
       const data = {
