@@ -19,6 +19,7 @@
     "njwt": "^1.0.0",
     "sweetalert": "^2.1.2",
     "vue": "^2.6.11",
+    "vue-friendly-iframe": "^0.18.0",
     "vue-jwt-decode": "^0.1.0",
     "vue-router": "^3.4.3"
   },

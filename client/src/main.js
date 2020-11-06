@@ -3,6 +3,7 @@ import App from './App.vue'
 import VueRouter from 'vue-router'
 import routes from './router/index'
 import axios from 'axios'
+import VueFriendlyIframe from 'vue-friendly-iframe';
 import { BootstrapVue, IconsPlugin, ModalPlugin} from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -10,6 +11,8 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
 Vue.use(ModalPlugin)
+Vue.use(VueFriendlyIframe)
+
 
 Vue.use(VueRouter)
 
