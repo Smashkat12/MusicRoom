@@ -89,6 +89,7 @@ import { axios_put,
          validName,
          validEmail } from "../functions/functions";
 import axios from "axios";
+import sweet from "sweetalert";
 export default {
   components: {
     "app-header": Header,
@@ -140,15 +141,13 @@ export default {
         username: escape(this.username),
         email: escape(this.email),
       };
-      var results = await axios_put(`/api/user/${this._id}`, data);
+      var results = await axios_put(`/api/user/${this.id}`, data);
       if (results !== "Oops!") {
         if (results.data.success == false) {
           this.errors = results.data.message;
           console.log(this.errors);
         } else if (results.data.success) {
-          this.success.push("Profile Updated");
-          this.clean_input();
-          this.$router.push("/profile");
+             sweet("", "Profile Updated", "success");
         }
       } else {
         this.errors.push("An unexpected error happened");
