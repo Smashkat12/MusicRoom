@@ -140,15 +140,14 @@ export default {
         username: escape(this.username),
         email: escape(this.email),
       };
-      var results = await axios_put(`/api/user/${this._id}`, data);
+      var results = await axios_put(`/api/user/${this.id}`, data);
       if (results !== "Oops!") {
         if (results.data.success == false) {
           this.errors = results.data.message;
           console.log(this.errors);
         } else if (results.data.success) {
+          console.log(results.data.updated._id);
           this.success.push("Profile Updated");
-          this.clean_input();
-          this.$router.push("/profile");
         }
       } else {
         this.errors.push("An unexpected error happened");
