@@ -40,7 +40,8 @@ export const registerValidation = [
 ];
 
 export const playlistTitleValidation = [
-	check("title").exists().withMessage("Playlist tiltle cannot be empty")
+  check("title").exists().withMessage("Playlist tiltle cannot be empty"),
+  check("type").exists().withMessage("Please provide playlist type"),
 ];
 
 

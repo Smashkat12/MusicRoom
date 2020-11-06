@@ -2,12 +2,12 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const PlaylistSchema = new Schema({
-    name: { type: String },
-    description: { type: String },
-    type: { type: String },
-    /*users: { type: Array },*/
-    tracks: { type: Array },
-    created_at: Date
+  name: { type: String },
+  _deezerPId: { type: Number },
+  type: { type: String },
+  users: { type: Array, default: [] },
+  tracks: { type: Array, default: [] },
+  created_at: Date,
 });
 
 //Set current date during insert

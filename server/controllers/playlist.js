@@ -462,18 +462,80 @@ exports.CreatePlaylist = (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  //api call to deezer
-  const deezerId = "555605401";
-  const deezerToken = "frGBBx2Ae5OTAJuuSwUaq7t1LRCz9nR4WFrdZOfWb5F0lFg30h";
+  Playlist.findOne({
+    name: req.body.title,
+  })
+    .then((response) => {
+      if (response) {
+        return res.status(400).send({
+          message: "Playlist with a name already exist!",
+        });
+      } else {
+        //api call to deezer
+        /* const deezerId = "555605401";
+        const deezerToken =
+          "frGBBx2Ae5OTAJuuSwUaq7t1LRCz9nR4WFrdZOfWb5F0lFg30h";
 
-  const url = `https://api.deezer.com/user/${deezerId}/playlists?title=${req.body.title}&access_token=${deezerToken}`;
+        const url = `https://api.deezer.com/user/${deezerId}/playlists?title=${req.body.title}&access_token=${deezerToken}`; */
 
-  /*   const url = `https://api.deezer.com/user/${req.user._deezerId}/playlists?title=${req.body.title}&access_token=${req.user.deezerToken}`;
-   */
-  axios
-    .post(url)
-    .then((result) => {
-      res.json({ success: true, playListId: result.data });
+        const url = `https://api.deezer.com/user/${req.user._deezerId}/playlists?title=${req.body.title}&access_token=${req.user.deezerToken}`;
+
+        axios
+          .post(url)
+          .then((result) => {
+           
+            const parameters = {
+              _deezerPId: result.data.id,
+              name: req.body.title,
+              type: req.body.type,
+            };
+            const playlist = new Playlist(parameters);
+
+            //Save playlist
+            playlist.save((error, playlist) => {
+              if (error) {
+                return res.status(500).send({
+                  message: "Server related error occured!",
+                });
+              }
+
+              Playlist.findByIdAndUpdate(
+                { _id: playlist._id },
+                {
+                  $push: {
+                    users: { id: req.user._id, role: "RW", creator: true },
+                  },
+                },
+                { new: true },
+                (err, newPlaylist) => {
+                  if (err) {
+                    const resStatusCode = 500;
+                    const fullError = { success: false, errors: err };
+                    const message = "Something went wrong in server";
+                    return generateServerError(
+                      res,
+                      resStatusCode,
+                      fullError,
+                      message
+                    );
+                  }
+
+                  return res.status(200).send({
+                    success: true,
+                    message: "playlist successfully created",
+                    playlist: newPlaylist,
+                  });
+                }
+              );
+            });
+          })
+          .catch((err) => {
+            const resStatusCode = 500;
+            const fullError = { success: false, errors: err };
+            const message = "Something went wrong in server";
+            return generateServerError(res, resStatusCode, fullError, message);
+          });
+      }
     })
     .catch((err) => {
       const resStatusCode = 500;
@@ -490,39 +552,41 @@ exports.CreatePlaylist = (req, res) => {
  * Add tracks to Playlist
  */
 exports.addPlaylistTracks = (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-    const url = `https://api.deezer.com/playlist/${req.user.PId}/tracks?&access_token=${req.user.deezerToken}`;
-  
-    axios.post(url).then((result) =>{
-        res.json({ success: true, playListId: result.data });
-    }).catch((err) => {
-        res.json({ success: false, err});
-    })
-   
-    
-  };
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+  const url = `https://api.deezer.com/playlist/${req.params.PId}/tracks?&access_token=${req.user.deezerToken}`;
 
-  /**
+  axios
+    .post(url)
+    .then((result) => {
+      res.json({ success: true, playListId: result.data });
+    })
+    .catch((err) => {
+      res.json({ success: false, err });
+    });
+};
+
+/**
  *
  * @param {*} req
  * @param {*} res
  * get tracks from Playlist
  */
 exports.getPlaylistTracks = (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-    const url = `https://api.deezer.com/playlist/${req.user.PId}/tracks?&access_token=${req.user.deezerToken}`;
-  
-    axios.get(url).then((result) =>{
-        res.json({ success: true, playListId: result.data });
-    }).catch((err) => {
-        res.json({ success: false, err});
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+  const url = `https://api.deezer.com/playlist/${req.params.PId}/tracks?&access_token=${req.user.deezerToken}`;
+
+  axios
+    .get(url)
+    .then((result) => {
+      res.json({ success: true, playListId: result.data });
     })
-   
-    
-  };
+    .catch((err) => {
+      res.json({ success: false, err });
+    });
+};

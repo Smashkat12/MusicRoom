@@ -23,7 +23,7 @@ router.get(
   controllerPlaylist.GetAllUserPlaylists
 );
 /*
-    Add Tracks
+    Add Tracks to playlist
 */
 router.post(
   "/:PId/tracks",
