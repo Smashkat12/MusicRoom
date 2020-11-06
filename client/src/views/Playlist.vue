@@ -11,14 +11,22 @@
           >
         </b-col>
       </b-row>
-      <br/>
+      <br />
       <b-row>
         <b-col sm="12">
-            <h1>{{ id }}</h1>
+          <h1></h1>
 
-            <div>
-              <vue-friendly-iframe :src="url"></vue-friendly-iframe>
-            </div>
+          <div>
+            <div
+              class="deezer-widget-player"
+              v-bind:data-src="url"          
+              data-scrolling="no"
+              data-frameborder="0"
+              data-allowTransparency="true"
+              data-width="700"
+              data-height="350"
+            ></div>
+          </div>
         </b-col>
       </b-row>
     </b-container>
@@ -29,12 +37,10 @@
 <script>
 import Footer from "../components/Footer";
 import Header from "../components/Header";
-import {axios_post} from "../functions/functions";
+import { axios_post } from "../functions/functions";
 import sweet from "sweetalert";
 import axios from "axios";
 import EventBus from "../event_bus/event_bus";
-
-
 
 export default {
   name: "Landing",
@@ -45,7 +51,6 @@ export default {
   data() {
     return {
       tracks: {},
-      url:"http://developers.deezer.com/en/plugins/player?playlist=true&width=700&height=240&autoplay=false&type=playlist&id=472423955",
       id: this.$route.params.id,
       title: "",
       found_playlists: [],
@@ -53,20 +58,39 @@ export default {
       selected: "",
       errors: [],
       success: [],
-      deezerId:"",
-      deezerToken:"",
-      type:""
+      deezerId: "",
+      deezerToken: "",
+      type: "",
+      url:"https://www.deezer.com/plugins/player?format=classic&autoplay=true&playlist=true&width=700&height=350&color=EF5466&layout=&size=medium&type=playlist&id="+this.$route.params.id+"&app_id=1",
     };
   },
   methods: {
-    createPlaylist: async function (){
+    playTracks() {
+        var w = document[
+        typeof document.getElementsByClassName === "function"
+          ? "getElementsByClassName"
+          : "querySelectorAll"
+      ]("deezer-widget-player");
+      for (var i = 0, l = w.length; i < l; i++) {
+        w[i].innerHTML = "";
+        var el = document.createElement("iframe");
+        el.src = w[i].getAttribute("data-src");
+        el.scrolling = w[i].getAttribute("data-scrolling");
+        el.frameBorder = w[i].getAttribute("data-frameborder");
+        el.setAttribute("frameBorder", w[i].getAttribute("data-frameborder"));
+        el.allowTransparency = w[i].getAttribute("data-allowTransparency");
+        el.width = w[i].getAttribute("data-width");
+        el.height = w[i].getAttribute("data-height");
+        w[i].appendChild(el);
+      }
+    },
+    createPlaylist: async function () {
       this.error = [];
       const data = {
         title: escape(this.title),
         type: escape(this.type),
         deezerId: escape(this.deezerId),
         deezerToken: escape(this.deezerToken),
-
       };
       var results = await axios_post("/api/playlist/create", data);
       if (results == "Oops!") {
@@ -76,47 +100,39 @@ export default {
         sweet("", "Created " + this.title + " Playlist", "success");
       }
     },
-    async getAllUserPlaylists() {
-      try {
-        const res = await axios.get('http://localhost:5000/api/playlist/me/all');
-        this.found_playlists = res.data.playLists;
-        this.no_of_playlist = res.data.playLists.length;
-      } catch (error) {
-        console.error(error);
-      }
-    },
     async getUserData() {
       let token = localStorage.getItem("jwt");
       let options = {
         method: "get",
         headers: { Authorization: token },
-        url: "http://localhost:5000/api/auth"
+        url: "http://localhost:5000/api/auth",
       };
       let user = await axios(options).catch(() => {
         console.log("Unable to process request");
       });
-      if(user.data.auth == true)
-      {
-        if(user.data.user._deezerId){
-            this.deezerId = user.data.user._deezerId
-            this.deezerToken = user.data.user.deezerToken;
+      if (user.data.auth == true) {
+        if (user.data.user._deezerId) {
+          this.deezerId = user.data.user._deezerId;
+          this.deezerToken = user.data.user.deezerToken;
         }
-      }else{
-        console.log("Not Authorised")
+      } else {
+        console.log("Not Authorised");
       }
     },
   },
-   mounted() {
+  mounted() {
     EventBus.$on("playlist_details", (data) => {
       this.tracks = data;
-      console.log(this.tracks);
     });
+        this.playTracks();
+
   },
-  updated(){
+  updated() {
     //this.getUserData();
     //this.getAllUserPlaylists();
+
   },
-  created(){
+  created() {
     //this.getUserData();
     //this.getAllUserPlaylists();
   },
@@ -134,13 +150,13 @@ export default {
   text-align: center;
 }
 .card-deck {
-    margin: auto 0;
-    text-align: left;
-    margin-left: 16px;
+  margin: auto 0;
+  text-align: left;
+  margin-left: 16px;
 }
 .card {
   /* border: solid; */
-  background-color:#b5afbc ;
+  background-color: #b5afbc;
   margin-top: 20px;
 }
 
@@ -151,7 +167,6 @@ export default {
 .card-img-top {
   height: 250px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-
 }
 .card-body {
   height: 200px;
@@ -159,10 +174,10 @@ export default {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   text-align: center;
 }
-.card-border{
-  border:yellow;
+.card-border {
+  border: yellow;
 }
 .layout {
-   text-align: left;
+  text-align: left;
 }
 </style>
