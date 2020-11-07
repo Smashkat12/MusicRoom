@@ -3,6 +3,9 @@
     <app-header></app-header>
     <h1 class="title">Search Music</h1>
     <section>
+      <select name="userPlaylist" v-model="selectedPlaylist">
+        <option v-for="list in playlists" v-bind:key="list.id" v-bind:value="list.title"> {{ list.title }} </option>
+      </select>
       <form @submit.prevent="submit">
         <br />
         <input type="text" v-model="title" id="title" placeholder="Title" />
@@ -23,8 +26,7 @@
             <option value="RATING_ASC">Top rated</option>
           </select>
         </div>
-        <br />
-        <br />
+        
         <button type="submit" class="buttons">Submit</button>
       </form>
       <div v-if="track" class="musics">
@@ -62,6 +64,9 @@ export default {
       title: "",
       track: null,
       searchBy: "RANKING_ASC",
+      selectedPlaylist:'',
+      playlists: [],
+      playlistId:''
     };
   },
   methods: {
@@ -70,8 +75,7 @@ export default {
         const res = await axios.get(
           "http://localhost:5000/api/playlist/me/all"
         );
-        this.found_playlists = res.data.playLists;
-        this.no_of_playlist = res.data.playLists.length;
+        this.playlists = res.data.playLists;
       } catch (error) {
         console.error(error);
       }
@@ -92,7 +96,11 @@ export default {
       this.search(this.title, this.searchBy).then((track) => {
         this.track = track;
       });
+      this.getAllUserPlaylists();
+
     },
+    created() {
+  },
   },
 };
 </script>
