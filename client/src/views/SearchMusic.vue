@@ -4,7 +4,7 @@
     <h1 class="title">Search Music</h1>
     <section>
       <select name="userPlaylist" v-model="selectedPlaylist">
-        <option v-for="list in playlists" v-bind:key="list.id" v-bind:value="list.title"> {{ list.title }} </option>
+        <option v-for="list in playlists" v-bind:key="list.id" v-bind:value="list.id"> {{ list.title }} </option>
       </select>
       <form @submit.prevent="submit">
         <br />
@@ -62,7 +62,7 @@ export default {
   data() {
     return {
       title: "",
-      track: null,
+      track: [],
       searchBy: "RANKING_ASC",
       selectedPlaylist:'',
       playlists: [],
@@ -70,6 +70,7 @@ export default {
     };
   },
   methods: {
+     
     async getAllUserPlaylists() {
       try {
         const res = await axios.get(

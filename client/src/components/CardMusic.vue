@@ -18,7 +18,7 @@
             <audio :src="track.preview" controls class="preview"></audio>
             <br />
             <div>
-              <button class="buttons" @click="AddToPlaylist()">
+              <button class="buttons" v-on:click="addToPlaylist(track.id)">
                 Add to playlist
               </button>
             </div>
@@ -30,10 +30,15 @@
 </template>
 
 <script>
+import {axios_post} from "../functions/functions";
+import sweet from "sweetalert";
+import axios from "axios";
 export default {
   name: "CardMusic",
   data() {
     return {
+      deezerId:'',
+      deezerToken:'',
       addMusic: [],
     };
   },
@@ -41,15 +46,38 @@ export default {
     track: Object,
   },
   methods: {
-    addToPlaylist() {
-      if (localStorage.getItem("AddSong") !== null) {
-        this.addMusic = JSON.parse(localStorage.getItem("AddSong"));
+    async addToPlaylist(trackid) {
+        //console.log(index);
+        //console.log(this.$parent.selectedPlaylist);
+        var results = await axios_post("/api/playlist/"+this.$parent.selectedPlaylist+"/tracks/"+trackid);
+        console.log(results);
+      if (results == "Oops!") {
+        sweet("", "Error", "error");
+      } else {
+        sweet("", "Track Added", "success");
       }
-      localStorage.removeItem("AddSong");
-      this.addMusic.push(this.track);
-      localStorage.setItem("AddSong", JSON.stringify(this.addMusic));
     },
   },
+  async getUserData() {
+      let token = localStorage.getItem("jwt");
+      let options = {
+        method: "get",
+        headers: { Authorization: token },
+        url: "http://localhost:5000/api/auth"
+      };
+      let user = await axios(options).catch(() => {
+        console.log("Unable to process request");
+      });
+      if(user.data.auth == true)
+      {
+        if(user.data.user._deezerId){
+            this.deezerId = user.data.user._deezerId
+            this.deezerToken = user.data.user.deezerToken;
+        }
+      }else{
+        console.log("Not Authorised")
+      }
+    },
 };
 </script>
 
