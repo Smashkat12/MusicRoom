@@ -26,7 +26,7 @@ router.get(
     Add Tracks to playlist
 */
 router.post(
-  "/:PId/tracks",
+  "/:PId/tracks/:trackid",
   passport.authenticate("jwt", { session: false }),
   controllerPlaylist.addPlaylistTracks
 );

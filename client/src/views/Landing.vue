@@ -37,7 +37,8 @@
           </b-modal>
         </b-col>
         <b-col sm="4" class="right">
-          <b-button class="buttons right" v-b-modal.newPlaylist
+          <b-button class="buttons">Add User To Playlist</b-button> 
+          <b-button class="buttons" v-b-modal.newPlaylist
             >Create Playlist</b-button
           >
         </b-col>
@@ -257,6 +258,9 @@ export default {
 }
 .right {
   text-align: right;
+}
+.buttons{
+  margin-left:5px;
 }
 
 .center {

@@ -558,15 +558,14 @@ exports.addPlaylistTracks = (req, res) => {
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
-  const url = `https://api.deezer.com/playlist/${req.params.PId}/tracks?&access_token=${req.user.deezerToken}`;
-
+  const url = `https://api.deezer.com/playlist/${req.params.PId}/tracks?request_method=post&songs=${req.params.trackid}&access_token=${req.user.deezerToken}`;
   axios
-    .post(url)
+    .get(url)
     .then((result) => {
-      res.json({ success: true, playListId: result.data });
+      res.json({ success: true, message: "Track Added" });
     })
     .catch((err) => {
-      res.json({ success: false, err });
+      res.json({ success: false, message: "Track already added" });
     });
 };
 
