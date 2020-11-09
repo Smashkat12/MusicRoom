@@ -3,7 +3,7 @@
     <app-header></app-header>
     <h1 class="title">Search Music</h1>
     <section>
-      <select name="userPlaylist" v-model="selectedPlaylist">
+      <select name="userPlaylist" v-model="selectedPlaylist" class="form-control">
         <option v-for="list in playlists" v-bind:key="list.id" v-bind:value="list.id"> {{ list.title }} </option>
       </select>
       <form @submit.prevent="submit">
