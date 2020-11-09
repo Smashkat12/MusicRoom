@@ -37,7 +37,7 @@
           </b-modal>
         </b-col>
         <b-col sm="4" class="right">
-          <b-button class="buttons">Add User To Playlist</b-button> 
+          <b-button class="buttons" v-b-modal.addUserToPlaylist>Add User To Playlist</b-button> 
           <b-button class="buttons" v-b-modal.newPlaylist
             >Create Playlist</b-button
           >
@@ -88,31 +88,6 @@
         <div class="d-block text-center">
           <h3>Link your account</h3>
         </div>
-        <!--<b-button
-          class="mt-3"
-          href="http://localhost:5000/api/auth/link/google"
-          variant="outline-success"
-          block
-          @click="hideModal"
-          >Link Google</b-button
-        >
-        <b-button
-          class="mt-3"
-          href="http://localhost:5000/api/auth/link/facebook"
-          variant="outline-success"
-          block
-          @click="hideModal"
-          >Link Facebook</b-button
-        >
-        
-        <b-button
-          class="mt-3"
-          href="http://localhost:8080/login"
-          variant="outline-success"
-          block
-          @click="hideModal"
-          >Link Local</b-button
-        >-->
         <b-button
           class="mt-3"
           href="http://localhost:5000/api/auth/link/deezer"
@@ -122,6 +97,26 @@
           >Link Deezer</b-button
         >
       </b-modal>
+
+      <b-modal
+            id="addUserToPlaylist"
+            ref="modal"
+            title="Adding User To Playlist"
+            @show="resetModalUser"
+            @hidden="resetModalUser"
+            @ok="handleOk"
+            okTitle="Add User(s)"
+          >
+            <form ref="form" @submit.stop.prevent="handleSubmitUser">
+              <b-form-group>
+                <label for="type">Playlists</label>
+                <b-form-select v-model="selected" :options="options"></b-form-select>
+                <br /><br />
+                <label for="tags-basic">Users</label>
+                <b-form-tags input-id="tags-basic" v-model="users"></b-form-tags>
+              </b-form-group>
+            </form>
+          </b-modal>
     </div>
 
     <app-footer></app-footer>
@@ -152,7 +147,8 @@ export default {
       success: [],
       deezerId:"",
       deezerToken:"",
-      type:""
+      type:"",
+      options:[]
     };
   },
   methods: {
@@ -180,7 +176,7 @@ export default {
       try {
         const res = await axios.get('http://localhost:5000/api/playlist/me/all');
         this.found_playlists = res.data.playLists;
-        this.no_of_playlist = res.data.playLists.length;
+        this.options = res.data.playLists;
       } catch (error) {
         console.error(error);
       }

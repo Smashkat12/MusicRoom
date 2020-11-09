@@ -10,7 +10,7 @@
 
             <div class="profile-image">
 
-              <img src="https://images.unsplash.com/photo-1513721032312-6a18a42c8763?w=152&h=152&fit=crop&crop=faces" alt="">
+              <!--<img src="https://images.unsplash.com/photo-1513721032312-6a18a42c8763?w=152&h=152&fit=crop&crop=faces" alt="">-->
 
             </div>
 
@@ -18,17 +18,17 @@
 
               <h1 class="profile-user-name">{{ username }}</h1>
 
-              <button class="btn profile-settings-btn" aria-label="profile settings"><i class="fas fa-cog" aria-hidden="true"></i></button>
+              <!--<button class="btn profile-settings-btn" aria-label="profile settings"><i class="fas fa-cog" aria-hidden="true"></i></button>-->
 
             </div>
 
             <div class="profile-stats">
 
               <ul>
-                <li><span class="profile-stat-count">164</span> playlists</li>
-                <li><span class="profile-stat-count">128</span> events</li>
+                <li><span class="profile-stat-count">{{ no_of_playlist }}</span> playlists</li>
+                <!--<li><span class="profile-stat-count">128</span> events</li>
                 <li><span class="profile-stat-count">188</span> followers</li>
-                <li><span class="profile-stat-count">206</span> following</li>
+                <li><span class="profile-stat-count">206</span> following</li>-->
               </ul>
 
             </div>
@@ -104,10 +104,19 @@ export default {
       email: "",
       lastname: "",
       errors: [],
-      success: []
+      success: [],
+      no_of_playlist:0
     };
   },
   methods: {
+     async getAllUserPlaylists() {
+      try {
+        const res = await axios.get('http://localhost:5000/api/playlist/me/all');
+        this.no_of_playlist = res.data.playLists.length;
+      } catch (error) {
+        console.error(error);
+      }
+    },
     validateProfile(){
       this.errors = [];
       var checkUsername = validUsername(this.username);
@@ -177,6 +186,7 @@ export default {
   },
   created() {
     this.getUserData();
+    this.getAllUserPlaylists();
   },
 };
 </script>
