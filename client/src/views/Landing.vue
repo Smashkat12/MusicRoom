@@ -124,9 +124,20 @@
         <form ref="form" @submit.stop.prevent="handleSubmitUser">
           <b-form-group>
             <label for="type">Playlists</label>
-              <select name="userPlaylist" v-model="selectedPlaylist" class="form-control" aria-placeholder="Select Playlist">
-                <option v-for="list in playlists" v-bind:key="list.id" v-bind:value="list.id"> {{ list.title }} </option>
-              </select>
+            <select
+              name="userPlaylist"
+              v-model="selectedPlaylist"
+              class="form-control"
+              aria-placeholder="Select Playlist"
+            >
+              <option
+                v-for="list in playlists"
+                v-bind:key="list.id"
+                v-bind:value="list.id"
+              >
+                {{ list.title }}
+              </option>
+            </select>
             <br /><br />
             <label for="tags-basic">Users</label>
             <b-form-tags input-id="tags-basic" v-model="users"></b-form-tags>
@@ -151,7 +162,6 @@ export default {
   components: {
     "app-header": Header,
     "app-footer": Footer,
- 
   },
   data() {
     return {
@@ -164,9 +174,11 @@ export default {
       deezerId: "",
       deezerToken: "",
       type: "",
-      selectedPlaylist:'',
+      selectedPlaylist: "",
       playlists: [],
-      playlistId:''
+      playlistId: "",
+      users:[],
+      email: "",
     };
   },
   methods: {
@@ -194,7 +206,9 @@ export default {
         const res = await axios.get(
           "http://localhost:5000/api/playlist/me/all"
         );
+        this.found_playlists = res.data.playLists;
         this.playlists = res.data.playLists;
+        this.options = res.data.playLists;
       } catch (error) {
         console.error(error);
       }
@@ -221,6 +235,9 @@ export default {
         console.log("Not Authorised");
       }
     },
+    async AddUserToPlaylist() {},
+
+
     checkFormValidity() {
       const valid = this.$refs.form.checkValidity();
       this.nameState = valid;
