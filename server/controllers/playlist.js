@@ -203,7 +203,7 @@ exports.AddMusicToPlaylist = (req, res) => {
 exports.UpdatePrivatePlaylist = (req, res) => {
   const bodyParams = {
     type: req.body.type,
-    email: req.body.email,
+    newUser: req.body.newUser,
   };
   const urlParams = {
     PId: req.params.playListId,
@@ -220,7 +220,7 @@ exports.UpdatePrivatePlaylist = (req, res) => {
     }
 
     User.findOne({
-      email: bodyParams["email"],
+      username: bodyParams["newUser"],
     }).then((userResponse) => {
       if (!userResponse) {
         return res.status(404).send({
@@ -270,14 +270,14 @@ exports.UpdatePrivatePlaylist = (req, res) => {
         users.push({
           id: user.id,
           role: temp,
-          email: user.email,
+          username: user.username,
           super: false,
         });
       } else {
         users[index] = {
           id: user.id,
           role: temp,
-          email: user.email,
+          username: user.username,
           super: false,
         };
       }
