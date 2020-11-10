@@ -118,7 +118,7 @@
         title="Adding User To Playlist"
         @show="resetModalUser"
         @hidden="resetModalUser"
-        @ok="handleOk"
+        @ok="handleOkay"
         okTitle="Add User(s)"
       >
         <form ref="form" @submit.stop.prevent="handleSubmitUser">
@@ -138,9 +138,32 @@
                 {{ list.title }}
               </option>
             </select>
-            <br /><br />
+            <br />
             <label for="tags-basic">Users</label>
-            <b-form-tags input-id="tags-basic" v-model="users"></b-form-tags>
+            <select
+              name="userSelect"
+              v-model="selectedUser"
+              class="form-control"
+            >
+              <option
+                v-for="user in users"
+                v-bind:key="user.id"
+                v-bind:value="user.id"
+              >
+                {{ user.username }}
+              </option>
+            </select>
+            <br />
+            <label for="type">User rights</label>
+            <b-form-radio v-model="type" name="rights" value="read"
+              >Read</b-form-radio
+            >
+            <b-form-radio v-model="type" name="rights" value="write"
+              >Write</b-form-radio
+            >
+            <b-form-radio v-model="type" name="rights" value="read&write"
+              >Read & Write</b-form-radio
+            >
           </b-form-group>
         </form>
       </b-modal>
@@ -177,8 +200,10 @@ export default {
       selectedPlaylist: "",
       playlists: [],
       playlistId: "",
-      users:[],
-      email: "",
+      users: [],
+      selectedUser: "",
+      id: null,
+      
     };
   },
   methods: {
@@ -235,8 +260,30 @@ export default {
         console.log("Not Authorised");
       }
     },
-    async AddUserToPlaylist() {},
+    async getUsers() {
+      try {
+        const res = await axios.get("http://localhost:5000/api/user");
 
+        this.users = res.data.users;
+        console.log(res.data.users)
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
+    async AddUserToPlaylist() {
+
+      var results = await axios_post(
+        "/api/updatePrivate/" + this.selectedPlaylist + "/" + this.userId,{newUser: this.username , type: this.read || this.write}
+      ); 
+      if (results == "Oops!") {
+        sweet("", results.data.err, "error");
+      } else {
+        console.log(results.data.success);
+        sweet("", "User " + this.username + " Added", "success");
+      }
+
+    },
 
     checkFormValidity() {
       const valid = this.$refs.form.checkValidity();
@@ -249,8 +296,18 @@ export default {
       // Trigger submit handler
       this.handleSubmit();
     },
+    handleOkay(bvModalEvt) {
+      // Prevent modal from closing
+      bvModalEvt.preventDefault();
+      // Trigger submit handler
+      this.handleSubmitUser();
+    },
+
     resetModal() {
       (this.title = ""), (this.nameState = null);
+    },
+    resetModalUser(){
+      (this.playlistId = "");
     },
     handleSubmit() {
       // Exit when the form isn't valid
@@ -262,6 +319,18 @@ export default {
       // Hide the modal manually
       this.$nextTick(() => {
         this.$bvModal.hide("newPlaylist");
+      });
+    },
+    handleSubmitUser() {
+      // Exit when the form isn't valid
+      if (!this.checkFormValidity()) {
+        return;
+      }
+      // Push the name to submitted names
+      this.AddUserToPlaylist();
+      // Hide the modal manually
+      this.$nextTick(() => {
+        this.$bvModal.hide("addUserToPlaylist");
       });
     },
     showModal() {
@@ -278,6 +347,8 @@ export default {
   },
   created() {
     this.getUserData();
+    this.getUsers();
+    this.AddUserToPlaylist();
     this.getAllUserPlaylists();
   },
 };
